@@ -46,11 +46,11 @@ entry example: adieu:a----:---e-
 
 	def getWordMap
 		puts "Enter a 5 letter word map (or type help): "
-		word = gets.chomp
+		word = $stdin.gets.chomp
 		if word == "help"
 			solveHelp
 			puts "Try again: "
-			word = gets.chomp
+			word = $stdin.gets.chomp
 		end
 		return word
 	end
@@ -63,7 +63,7 @@ entry example: adieu:a----:---e-
 		word = ""	
 		loop do 
 			puts "Enter a 5 letter word: "
-			word = gets.downcase.chomp
+			word = $stdin.gets.downcase.chomp
 			break if @@status[:words].include?(word)
 			break if word == "quit"
 			puts "#{word} is not valid. Try again."
@@ -166,66 +166,66 @@ entry example: adieu:a----:---e-
 
 		6.times do 
 
-			word = getWordMap
-
-			if word == "quit"
-				puts "Exiting. Bye!"
-				return true
+			valid = false
+			until valid do
+				word_map = getWordMap
+				try = word_map.split(":")
+				if try[0] == "quit"
+					puts "Exiting. Bye!"
+					return true
+				end
+				if checkWord(try[0]) && checkMap(try[1]) && checkMap(try[2])
+					valid = true
+				end
 			end
 
-			puts "Your input was: '#{word}'"
+			guess = try[0]
 
-			if checkInput(word)
-
-				try = word.split(":")
-
-				guess = try[0]
-
-				#pmap is additive
-				for i in 0..4
-					if try[1][i] != "-"
-						@@status[:pmap][i] = try[1][i]
-					end 
-				end
-
-				@@status[:nmap].push [
-					try[2][0],
-					try[2][1],
-					try[2][2],
-					try[2][3],
-					try[2][4]
-				]
-
-				for i in 0..4
-					if @@status[:pmap][i].match(/[a-z]/)
-						@@status[:ltrs].push @@status[:pmap][i]
-					end
-					@@status[:nmap].each do |nm|
-						if nm[i].match(/[a-z]/)
-							@@status[:ltrs].push nm[i]
-						end
-					end
-				end
-				@@status[:ltrs].uniq!
-
-				@@status[:alphabet] = updateAlphabet(@@status[:alphabet], guess, @@status[:ltrs])
-
-				@@status[:matches] = getMatches(@@status[:guesses], @@status[:alphabet], @@status[:pmap], @@status[:nmap], @@status[:ltrs])
-
-				puts "#{@@status[:matches].count} possible matches:"
-				@@status[:matches].each_with_index do |match, index|
-					print "#{match} "
-				end
-
-				@@status[:guesses].push "#{guess} \"|\"pmap:#{@@status[:pmap].join}\"|\"nmap:#{@@status[:nmap].last.join}\"|ltrs:\"#{@@status[:ltrs].join}\""
-
-				puts "\nGuesses:"
-				@@status[:guesses].each do |g|
-					puts g
-				end
-				puts "Alphabet: #{@@status[:alphabet].join(" ")}"
-
+			#pmap is additive
+			for i in 0..4
+				if try[1][i] != "-"
+					@@status[:pmap][i] = try[1][i]
+				end 
 			end
+
+			@@status[:nmap].push [
+				try[2][0],
+				try[2][1],
+				try[2][2],
+				try[2][3],
+				try[2][4]
+			]
+
+			for i in 0..4
+				if @@status[:pmap][i].match(/[a-z]/)
+					@@status[:ltrs].push @@status[:pmap][i]
+				end
+				@@status[:nmap].each do |nm|
+					if nm[i].match(/[a-z]/)
+						@@status[:ltrs].push nm[i]
+					end
+				end
+			end
+			@@status[:ltrs].uniq!
+
+			@@status[:alphabet] = updateAlphabet(@@status[:alphabet], guess, @@status[:ltrs])
+
+			@@status[:matches] = getMatches(@@status[:guesses], @@status[:alphabet], @@status[:pmap], @@status[:nmap], @@status[:ltrs])
+
+			puts "#{@@status[:matches].count} possible matches:"
+			@@status[:matches].each_with_index do |match, index|
+				print "#{match} "
+			end
+
+			@@status[:guesses].push "#{guess} \"|\"pmap:#{@@status[:pmap].join}\"|\"nmap:#{@@status[:nmap].last.join}\"|ltrs:\"#{@@status[:ltrs].join}\""
+
+			puts "\nGuesses:"
+			@@status[:guesses].each do |g|
+				puts g
+			end
+			puts "Alphabet: #{@@status[:alphabet].join(" ")}"
+
+			
 
 		end
 
@@ -255,8 +255,13 @@ entry example: adieu:a----:---e-
 	end
 
 	def checkMap(map)
-		if map.length != 5
-			puts "Map \"#{map}\" must be 5 letters or -"
+		if map 
+			if map.length != 5
+				puts "Map \"#{map}\" must be 5 letters or -"
+				return false
+			end
+		else
+			puts "Map is missing."
 			return false
 		end
 		return true
@@ -483,24 +488,6 @@ entry example: adieu:a----:---e-
 		end
 
 		return matches.sort.uniq
-
-	end
-
-	def checkInput(input)
-
-		trial = input.split(":")
-
-		unless checkWord(trial[0])
-			puts "word no good"
-			return false
-		end
-
-		unless checkMap(trial[1])
-			puts "map no good"
-			return false
-		end
-
-		return true
 
 	end
 
