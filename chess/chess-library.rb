@@ -15,8 +15,8 @@ class Board
 			b4: :o,
 			b5: :o,
 			b6: :o,
-			b7: :wP,
-			b8: :wN,
+			b7: :bP,
+			b8: :bN,
 			c1: :bB,
 			c2: :bP,
 			c3: :o,
@@ -69,8 +69,32 @@ class Board
 
 	end
 
+	def pp(pos)
+		pos == :o ? "  " : pos
+	end
+
 	def print
-		puts @@board
+		puts "\n\n"
+		puts "  | a  | b  | c  | d  | e  | f  | g  | h  |"
+		puts "----------------------------------------------"
+		puts "8 | #{pp(@@board[:a8])} | #{pp(@@board[:b8])} | #{pp(@@board[:c8])} | #{pp(@@board[:d8])} | #{pp(@@board[:e8])} | #{pp(@@board[:f8])} | #{pp(@@board[:g8])} | #{pp(@@board[:h8])} | 8"
+		puts "----------------------------------------------"
+		puts "7 | #{pp(@@board[:a7])} | #{pp(@@board[:b7])} | #{pp(@@board[:c7])} | #{pp(@@board[:d7])} | #{pp(@@board[:e7])} | #{pp(@@board[:f7])} | #{pp(@@board[:g7])} | #{pp(@@board[:h7])} | 7"
+		puts "----------------------------------------------"
+		puts "6 | #{pp(@@board[:a6])} | #{pp(@@board[:b6])} | #{pp(@@board[:c6])} | #{pp(@@board[:d6])} | #{pp(@@board[:e6])} | #{pp(@@board[:f6])} | #{pp(@@board[:g6])} | #{pp(@@board[:h6])} | 6"
+		puts "----------------------------------------------"
+		puts "5 | #{pp(@@board[:a5])} | #{pp(@@board[:b5])} | #{pp(@@board[:c5])} | #{pp(@@board[:d5])} | #{pp(@@board[:e5])} | #{pp(@@board[:f5])} | #{pp(@@board[:g5])} | #{pp(@@board[:h5])} | 5"
+		puts "----------------------------------------------"
+		puts "4 | #{pp(@@board[:a4])} | #{pp(@@board[:b4])} | #{pp(@@board[:c4])} | #{pp(@@board[:d4])} | #{pp(@@board[:e4])} | #{pp(@@board[:f4])} | #{pp(@@board[:g4])} | #{pp(@@board[:h4])} | 4"
+		puts "----------------------------------------------"
+		puts "3 | #{pp(@@board[:a3])} | #{pp(@@board[:b3])} | #{pp(@@board[:c3])} | #{pp(@@board[:d3])} | #{pp(@@board[:e3])} | #{pp(@@board[:f3])} | #{pp(@@board[:g3])} | #{pp(@@board[:h3])} | 3"
+		puts "----------------------------------------------"
+		puts "2 | #{pp(@@board[:a2])} | #{pp(@@board[:b2])} | #{pp(@@board[:c2])} | #{pp(@@board[:d2])} | #{pp(@@board[:e2])} | #{pp(@@board[:f2])} | #{pp(@@board[:g2])} | #{pp(@@board[:h2])} | 2"
+		puts "----------------------------------------------"
+		puts "1 | #{pp(@@board[:a1])} | #{pp(@@board[:b1])} | #{pp(@@board[:c1])} | #{pp(@@board[:d1])} | #{pp(@@board[:e1])} | #{pp(@@board[:f1])} | #{pp(@@board[:g1])} | #{pp(@@board[:h1])} | 1"
+		puts "----------------------------------------------"
+		puts "  | a  | b  | c  | d  | e  | f  | g  | h  |"
+		puts "\n\n"
 	end
 end
 
