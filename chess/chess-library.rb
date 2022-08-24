@@ -80,19 +80,19 @@ class Chess
 
 		game_over = false
 
+		moves = 0
 		until game_over do
-			
+			moves += 1
+			color = moves % 2 == 0 ? :b : :w
 			valid_move = false
 			until valid_move do
-				white_move = get_move(:w)
-				valid_move = validate_move(white_move)
+				algebraic_move = get_move(color)
+				move = convert_algebraic(color, algebraic_move)
+				valid_move = validate_move(move)
 			end
-			update_board(convert_algebraic(:w, white_move))
+			update_board(move)
 			print_board
 			
-			#@moves.push [white_move, black_move]
-			game_over = true
-
 		end
 	end
 
@@ -104,30 +104,91 @@ class Chess
 	end
 
 	def convert_algebraic(color, algebraic_move)
-		# returns hash coded_move
+		# returns hash move
 		# piece - in symbol (ex: wK, bN1)
 		# from - board pos (ex: a1, c3)
 		# to - board pos
-
-		puts "w: hard coded!"
+		#
+		#this is what we want...
+		#move = {
+		#	piece: @board[:e2],
+		#	from: :e2,
+		#	to: :e4
+		#}
+		#
+		#from this: e4
+		#
 
 		#this is what we want...
-		coded_move = {
-			piece: @board[:e2],
-			from: :e2,
-			to: :e4
+		move = {
+			piece: "",
+			from: "",
+			to: ""
 		}
 
-		move = algebraic_move.chars
+		amc = algebraic_move.chars
 
-		return coded_move
+		if amc[0].match?(/[abcdefhg]/) #pawn move
+
+			#which pawn?
+			@board.each do |key, val|
+				if key.start_with?(amc[0]) && val.class == Pawn
+					if val.color == color
+						move[:piece] = val
+						move[:from] = val.position
+					end
+				end
+			end	
+
+			puts "#{amc[0]} pawn "
+			if amc[1] == "x"
+				puts "takes #{amc[2]}#{amc[3]}"
+				move[:to] = "#{amc[2]}#{amc[3]}".to_sym
+			else
+				puts "moves to #{algebraic_move}"
+				puts algebraic_move.class
+				move[:to] = algebraic_move.to_sym
+			end
+
+		end
+
+
+		if amc[0].match?(/[RBNKQ]/) #rook, bishop, knight, king, queen move
+			puts "rook, bishop, knight, king, queen move"
+		end
+
+		puts "Algebraic move: #{algebraic_move}"
+		puts "move: #{move}"
+
+		return move
 
 	end
 
-	def validate_move(algebraic_move) #move in algebraic notation (PNG)
+	def validate_move(move) #move in coded form
 		#this will be a big set of logic!
-		puts "w: not validating"
-		return true
+		checks = [] #all positions must equal true to pass
+		case move[:piece].class
+		when King
+		when Queen
+		when Rook
+		when Bishop
+		when Knight
+		when Pawn
+			#make sure pawn is moving forward or getting promoted
+			if move[:piece].color == :w
+				if move[:from].name.chars[1].to_i < move[:to].name.chars[1].to_i
+					checks.push true
+				else
+					checks.push false
+					puts "Invalid move. Pawn must move forward."
+				end
+			end
+		end
+
+		checks.each do |check|
+			return false if check == false
+		end		
+
 	end
 
 	def update_board(move)
@@ -168,9 +229,10 @@ class Chess
 end
 
 class Vacant
-	attr_reader :position, :unicode
+	attr_reader :position, :color, :unicode
 	def initialize(position)
 		@position = position
+		@color = :none
 		@unicode = " "
 	end
 end
