@@ -1,4 +1,4 @@
 require "./chess-library.rb"
 
-board = Board.new
-board.print
+chess = Chess.new
+chess.play
