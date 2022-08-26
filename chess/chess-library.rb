@@ -174,15 +174,7 @@ class Chess
 		when Bishop
 		when Knight
 		when Pawn
-			#make sure pawn is moving forward or getting promoted
-			if move[:piece].color == :w
-				if move[:from].name.chars[1].to_i < move[:to].name.chars[1].to_i
-					checks.push true
-				else
-					checks.push false
-					puts "Invalid move. Pawn must move forward."
-				end
-			end
+
 		end
 
 		checks.each do |check|
@@ -243,10 +235,24 @@ class Pawn
 	def initialize(color, position)
 		@color = color
 		@position = position
+		@initial_position = position
 		@moves = 0
 		@captured = false
 		@unicode = color == :w ? "\u2659".encode('utf-8') : "\u265f".encode('utf-8')
 	end
+
+	def valid_move?(move)
+		#make sure pawn is moving forward or getting promoted
+		if @color == :w
+			if move[:from].name.chars[1].to_i < move[:to].name.chars[1].to_i
+				checks.push true
+			else
+				checks.push false
+				puts "Invalid move. Pawn must move forward."
+			end
+		end
+	end
+
 end
 
 class Rook
@@ -255,6 +261,7 @@ class Rook
 	def initialize(color, position)
 		@color = color
 		@position = position
+		@initial_position = position
 		@moves = 0
 		@captured = false
 		@unicode = color == :w ? "\u2656".encode('utf-8') : "\u265c".encode('utf-8')
@@ -267,6 +274,7 @@ class Bishop
 	def initialize(color, position)
 		@color = color
 		@position = position
+		@initial_position = position
 		@moves = 0
 		@captured = false
 		@unicode = color == :w ? "\u2657".encode('utf-8') : "\u265d".encode('utf-8')
@@ -279,6 +287,7 @@ class Knight
 	def initialize(color, position)
 		@color = color
 		@position = position
+		@initial_position = position
 		@moves = 0
 		@captured = false
 		@unicode = color == :w ? "\u2658".encode('utf-8') : "\u265e".encode('utf-8')
@@ -291,6 +300,7 @@ class King
 	def initialize(color, position)
 		@color = color
 		@position = position
+		@initial_position = position
 		@moves = 0
 		@captured = false
 		@unicode = color == :w ? "\u2654".encode('utf-8') : "\u265a".encode('utf-8')
@@ -303,6 +313,7 @@ class Queen
 	def initialize(color, position)
 		@color = color
 		@position = position
+		@initial_position = position
 		@moves = 0
 		@captured = false
 		@unicode = color == :w ? "\u2655".encode('utf-8') : "\u265b".encode('utf-8')
