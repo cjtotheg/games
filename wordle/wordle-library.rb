@@ -2,7 +2,7 @@
 class Wordle
 
 	def initialize
-		@@status = {
+		@status = {
 			word: "",
 			alphabet: ("a"..."z").to_a,
 			pmap: ["-","-","-","-","-"],
@@ -15,15 +15,15 @@ class Wordle
 
 		#read in word file once
 		IO.foreach("data/words.txt"){|word|
-			@@status[:words].push word.chomp
+			@status[:words].push word.chomp
 		}
 
-		@@status[:word] = @@status[:words].sample
+		@status[:word] = @status[:words].sample
 
 	end
 
 	def getStatus
-		return @@status
+		return @status
 	end
 
 	def solveHelp
@@ -64,7 +64,7 @@ entry example: adieu:a----:---e-
 		loop do 
 			puts "Enter a 5 letter word: "
 			word = $stdin.gets.downcase.chomp
-			break if @@status[:words].include?(word)
+			break if @status[:words].include?(word)
 			break if word == "quit"
 			puts "#{word} is not valid. Try again."
 		end
@@ -74,9 +74,9 @@ entry example: adieu:a----:---e-
 	def setPmap(guess)
 		#pmap is additive
 
-		@@status[:word].chars.each_with_index do |ltr,i|
+		@status[:word].chars.each_with_index do |ltr,i|
 			if(guess.chars[i] == ltr)
-				@@status[:pmap][i] = ltr
+				@status[:pmap][i] = ltr
 			end
 		end
 	end
@@ -85,15 +85,15 @@ entry example: adieu:a----:---e-
 		#this will become an array of array as guesses keep coming
 		nmap = ["-","-","-","-","-"]
 		guess.chars.each_with_index do |ltr, i|
-			if( @@status[:word].match(ltr) && @@status[:word].chars[i] !=  ltr ) #if position is a letter match, it will be in pmap
+			if( @status[:word].match(ltr) && @status[:word].chars[i] !=  ltr ) #if position is a letter match, it will be in pmap
 				nmap[i] = ltr
 			end
 		end
-		@@status[:nmap].push nmap
+		@status[:nmap].push nmap
 	end
 
 	def guessMatch?(guess)
-		guess == @@status[:word] ? true : false
+		guess == @status[:word] ? true : false
 	end
 
 	def play
@@ -104,8 +104,8 @@ entry example: adieu:a----:---e-
 			round += 1
 			#debug
 			#puts "DEBUG>>>>>>>>"
-			#puts "word: #{@@status[:word]}"
-			#puts "matches: #{@@status[:matches]}"
+			#puts "word: #{@status[:word]}"
+			#puts "matches: #{@status[:matches]}"
 			#puts "<<<<<<ENDEBUG"
 
 			guess = getGuess
@@ -122,33 +122,33 @@ entry example: adieu:a----:---e-
 				setNmap(guess)
 
 				for i in 0..4
-					if @@status[:pmap][i].match(/[a-z]/)
-						@@status[:ltrs].push @@status[:pmap][i]
+					if @status[:pmap][i].match(/[a-z]/)
+						@status[:ltrs].push @status[:pmap][i]
 					end
-					@@status[:nmap].each do |nm|
+					@status[:nmap].each do |nm|
 						if nm[i].match(/[a-z]/)
-							@@status[:ltrs].push nm[i]
+							@status[:ltrs].push nm[i]
 						end
 					end
 				end
 
-				@@status[:ltrs].uniq!
-				@@status[:ltrs].sort!
+				@status[:ltrs].uniq!
+				@status[:ltrs].sort!
 
-				@@status[:alphabet] = updateAlphabet(@@status[:alphabet], guess, @@status[:ltrs])
+				@status[:alphabet] = updateAlphabet(@status[:alphabet], guess, @status[:ltrs])
 
-				@@status[:matches] = getMatches(@@status[:guesses], @@status[:alphabet], @@status[:pmap], @@status[:nmap], @@status[:ltrs])
+				@status[:matches] = getMatches(@status[:guesses], @status[:alphabet], @status[:pmap], @status[:nmap], @status[:ltrs])
 
-				@@status[:guesses].push "#{round}: #{guess} | #{@@status[:pmap].join} | #{@@status[:nmap].last.join} | #{@@status[:ltrs].join}"
+				@status[:guesses].push "#{round}: #{guess} | #{@status[:pmap].join} | #{@status[:nmap].last.join} | #{@status[:ltrs].join}"
 
 				puts "\nGuesses  | pmap  | nmap  | ltrs "
-				@@status[:guesses].each do |g|
+				@status[:guesses].each do |g|
 					puts g
 				end
-				puts "unused   | #{@@status[:alphabet].join(" ")}\n\n"
+				puts "unused   | #{@status[:alphabet].join(" ")}\n\n"
 
 				if guessMatch?(guess)
-					puts "You win! The word is: #{@@status[:word]}\n\n"
+					puts "You win! The word is: #{@status[:word]}\n\n"
 					return true
 				end				
 
@@ -156,7 +156,7 @@ entry example: adieu:a----:---e-
 
 		end
 
-		puts "That's 6 entries. You should have solved it by now! The word is #{@@status[:word]}"
+		puts "That's 6 entries. You should have solved it by now! The word is #{@status[:word]}"
 
 	end
 
@@ -184,11 +184,11 @@ entry example: adieu:a----:---e-
 			#pmap is additive
 			for i in 0..4
 				if try[1][i] != "-"
-					@@status[:pmap][i] = try[1][i]
+					@status[:pmap][i] = try[1][i]
 				end 
 			end
 
-			@@status[:nmap].push [
+			@status[:nmap].push [
 				try[2][0],
 				try[2][1],
 				try[2][2],
@@ -197,33 +197,33 @@ entry example: adieu:a----:---e-
 			]
 
 			for i in 0..4
-				if @@status[:pmap][i].match(/[a-z]/)
-					@@status[:ltrs].push @@status[:pmap][i]
+				if @status[:pmap][i].match(/[a-z]/)
+					@status[:ltrs].push @status[:pmap][i]
 				end
-				@@status[:nmap].each do |nm|
+				@status[:nmap].each do |nm|
 					if nm[i].match(/[a-z]/)
-						@@status[:ltrs].push nm[i]
+						@status[:ltrs].push nm[i]
 					end
 				end
 			end
-			@@status[:ltrs].uniq!
+			@status[:ltrs].uniq!
 
-			@@status[:alphabet] = updateAlphabet(@@status[:alphabet], guess, @@status[:ltrs])
+			@status[:alphabet] = updateAlphabet(@status[:alphabet], guess, @status[:ltrs])
 
-			@@status[:matches] = getMatches(@@status[:guesses], @@status[:alphabet], @@status[:pmap], @@status[:nmap], @@status[:ltrs])
+			@status[:matches] = getMatches(@status[:guesses], @status[:alphabet], @status[:pmap], @status[:nmap], @status[:ltrs])
 
-			puts "#{@@status[:matches].count} possible matches:"
-			@@status[:matches].each_with_index do |match, index|
+			puts "#{@status[:matches].count} possible matches:"
+			@status[:matches].each_with_index do |match, index|
 				print "#{match} "
 			end
 
-			@@status[:guesses].push "#{guess} \"|\"pmap:#{@@status[:pmap].join}\"|\"nmap:#{@@status[:nmap].last.join}\"|ltrs:\"#{@@status[:ltrs].join}\""
+			@status[:guesses].push "#{guess} \"|\"pmap:#{@status[:pmap].join}\"|\"nmap:#{@status[:nmap].last.join}\"|ltrs:\"#{@status[:ltrs].join}\""
 
 			puts "\nGuesses:"
-			@@status[:guesses].each do |g|
+			@status[:guesses].each do |g|
 				puts g
 			end
-			puts "Alphabet: #{@@status[:alphabet].join(" ")}"
+			puts "Alphabet: #{@status[:alphabet].join(" ")}"
 
 			
 
@@ -241,7 +241,7 @@ entry example: adieu:a----:---e-
 		end
 
 		valid = false
-		@@status[:words].each do |word|
+		@status[:words].each do |word|
 			if word == input
 				valid = true
 			end
@@ -300,7 +300,7 @@ entry example: adieu:a----:---e-
 		
 		## words matching letter count
 		if anyltrs == true
-			@@status[:words].each do |word|
+			@status[:words].each do |word|
 
 				ltr_ct = 0
 
