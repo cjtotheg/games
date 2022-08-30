@@ -1,5 +1,138 @@
 class Chess
 	def initialize
+		@game = Game.new
+		play
+	end
+
+	private
+
+	def play
+
+		@game.print_board
+
+		game_over = false
+
+		moves = 0
+		until game_over do
+			moves += 1
+			color = moves % 2 == 0 ? :b : :w
+			pgn_move = nil
+			valid_move = false
+			until valid_move do
+				pgn_move = get_pgn_move(color)
+				if @game.update_board(color, pgn_move)
+					valid_move = true
+				end
+			end
+			@game.print_board
+		end
+	end
+
+	def get_pgn_move(color)
+		puts color == :w ? "White move: " : "Black move: "
+		$stdin.gets.strip
+	end
+
+end
+
+class Vacant
+	attr_reader :position, :color, :unicode
+	def initialize(position)
+		@position = position
+		@color = :none
+		@unicode = " "
+	end
+end
+
+### Pieces have capable moves and valid moves. The class will boolean if capable. Validity has to be compared by what's happened on the board.
+
+class Pawn
+	attr_reader :id, :color, :position, :moves, :unicode, :captured
+	attr_writer :position, :moves, :captured
+	def initialize(color, position)
+		@color = color
+		@position = position
+		@id = position
+		@moves = 0
+		@captured = false
+		@unicode = color == :w ? "\u2659".encode('utf-8') : "\u265f".encode('utf-8')
+	end
+end
+
+class Rook
+	attr_reader :id, :color, :position, :moves, :unicode, :captured
+	attr_writer :position, :moves, :captured
+	def initialize(color, position)
+		@color = color
+		@position = position
+		@id = position
+		@moves = 0
+		@captured = false
+		@unicode = color == :w ? "\u2656".encode('utf-8') : "\u265c".encode('utf-8')
+	end
+end
+
+class Bishop
+	attr_reader :id, :color, :position, :moves, :unicode, :captured
+	attr_writer :position, :moves, :captured
+	def initialize(color, position)
+		@color = color
+		@position = position
+		@id = position
+		@moves = 0
+		@captured = false
+		@unicode = color == :w ? "\u2657".encode('utf-8') : "\u265d".encode('utf-8')
+	end	
+end
+
+class Knight
+	attr_reader :id, :color, :position, :moves, :unicode, :captured
+	attr_writer :position, :moves, :captured
+	def initialize(color, position)
+		@color = color
+		@position = position
+		@id = position
+		@moves = 0
+		@captured = false
+		@unicode = color == :w ? "\u2658".encode('utf-8') : "\u265e".encode('utf-8')
+	end	
+end
+
+class King
+	attr_reader :id, :color, :position, :moves, :unicode, :captured
+	attr_writer :position, :moves, :captured
+	def initialize(color, position)
+		@color = color
+		@position = position
+		@id = position
+		@moves = 0
+		@captured = false
+		@unicode = color == :w ? "\u2654".encode('utf-8') : "\u265a".encode('utf-8')
+	end	
+end
+
+class Queen
+	attr_reader :id, :color, :position, :moves, :unicode, :captured
+	attr_writer :position, :moves, :captured
+	def initialize(color, position)
+		@color = color
+		@position = position
+		@id = position
+		@moves = 0
+		@captured = false
+		@unicode = color == :w ? "\u2655".encode('utf-8') : "\u265b".encode('utf-8')
+	end	
+end
+
+#Tracks the game
+#Validates moves
+class Game
+	attr_reader :moves
+	attr_writer 
+	def initialize
+
+		#each position is a hash
+		@moves = [] 
 
 		@board = {
 			a1: Rook.new(:w, :a1),
@@ -68,127 +201,45 @@ class Chess
 			h8: Rook.new(:b, :h8)
 		}
 
-		@moves = [] #array of arrays in algebraic notation white black 
+	end
+
+	#color: :w, :b
+	#move: pgn notation
+	#stores move in @moves
+	def move(color, move)
 
 	end
 
-	public
-
-	def play
-
-		print_board
-
-		game_over = false
-
-		moves = 0
-		until game_over do
-			moves += 1
-			color = moves % 2 == 0 ? :b : :w
-			valid_move = false
-			until valid_move do
-				algebraic_move = get_move(color)
-				move = convert_algebraic(color, algebraic_move)
-				valid_move = validate_move(move)
-			end
-			update_board(move)
-			print_board
-			
-		end
-	end
-
-	private
-
-	def get_move(color)
-		puts color == :w ? "White move: " : "Black move: "
-		$stdin.gets.strip
-	end
-
-	def convert_algebraic(color, algebraic_move)
-		# returns hash move
-		# piece - in symbol (ex: wK, bN1)
-		# from - board pos (ex: a1, c3)
-		# to - board pos
-		#
-		#this is what we want...
-		#move = {
-		#	piece: @board[:e2],
-		#	from: :e2,
-		#	to: :e4
-		#}
-		#
-		#from this: e4
-		#
-
-		#this is what we want...
-		move = {
-			piece: "",
-			from: "",
-			to: ""
-		}
-
-		amc = algebraic_move.chars
-
-		if amc[0].match?(/[abcdefhg]/) #pawn move
-
-			#which pawn?
-			@board.each do |key, val|
-				if key.start_with?(amc[0]) && val.class == Pawn
-					if val.color == color
-						move[:piece] = val
-						move[:from] = val.position
-					end
-				end
-			end	
-
-			puts "#{amc[0]} pawn "
-			if amc[1] == "x"
-				puts "takes #{amc[2]}#{amc[3]}"
-				move[:to] = "#{amc[2]}#{amc[3]}".to_sym
-			else
-				puts "moves to #{algebraic_move}"
-				puts algebraic_move.class
-				move[:to] = algebraic_move.to_sym
-			end
-
-		end
-
-
-		if amc[0].match?(/[RBNKQ]/) #rook, bishop, knight, king, queen move
-			puts "rook, bishop, knight, king, queen move"
-		end
-
-		puts "Algebraic move: #{algebraic_move}"
-		puts "move: #{move}"
-
-		return move
-
-	end
-
-	def validate_move(move) #move in coded form
-		#this will be a big set of logic!
-		checks = [] #all positions must equal true to pass
-		case move[:piece].class
-		when King
-		when Queen
-		when Rook
-		when Bishop
-		when Knight
-		when Pawn
-
-		end
-
-		checks.each do |check|
-			return false if check == false
-		end		
-
-	end
-
-	def update_board(move)
-		@board[move[:from]] = Vacant.new(move[:from])
-		@board[move[:to]] = move[:piece]
-		@board[move[:to]].moves += 1
-		@board[move[:to]].position = move[:to]
+	def valid_move?(pgn_move)
 		return true
+	end
+
+	#return true if move valid and board updated
+	#return false if move invalid, do not update board
+	def update_board(color, pgn_move)
+		
+		#who moved?
+		m = pgn_move.chars
+
+		if m[0].match?(/[abcdefgh]/) #pawn move
+			return pawn_move(color, pgn_move)
+		end
+
+
+		return true
+	end
+
+	def pawn_move(color, pgn_move)
+		m = pgn_move.chars
+		
+		#which pawn?
+		@board.each do |key, val|
+			if val.class == Pawn && val.color == color && val.position.to_s.chars[0] == m[0]
+				puts val
+				puts "need to update here!!!"
+			end
+		end
+
 	end
 
 	def pp(pos) #piece in position
@@ -219,104 +270,3 @@ class Chess
 	end
 
 end
-
-class Vacant
-	attr_reader :position, :color, :unicode
-	def initialize(position)
-		@position = position
-		@color = :none
-		@unicode = " "
-	end
-end
-
-class Pawn
-	attr_reader :color, :position, :moves, :unicode, :captured
-	attr_writer :position, :moves, :captured
-	def initialize(color, position)
-		@color = color
-		@position = position
-		@initial_position = position
-		@moves = 0
-		@captured = false
-		@unicode = color == :w ? "\u2659".encode('utf-8') : "\u265f".encode('utf-8')
-	end
-
-	def valid_move?(move)
-		#make sure pawn is moving forward or getting promoted
-		if @color == :w
-			if move[:from].name.chars[1].to_i < move[:to].name.chars[1].to_i
-				checks.push true
-			else
-				checks.push false
-				puts "Invalid move. Pawn must move forward."
-			end
-		end
-	end
-
-end
-
-class Rook
-	attr_reader :color, :position, :moves, :unicode, :captured
-	attr_writer :position, :moves, :captured
-	def initialize(color, position)
-		@color = color
-		@position = position
-		@initial_position = position
-		@moves = 0
-		@captured = false
-		@unicode = color == :w ? "\u2656".encode('utf-8') : "\u265c".encode('utf-8')
-	end
-end
-
-class Bishop
-	attr_reader :color, :position, :moves, :unicode, :captured
-	attr_writer :position, :moves, :captured
-	def initialize(color, position)
-		@color = color
-		@position = position
-		@initial_position = position
-		@moves = 0
-		@captured = false
-		@unicode = color == :w ? "\u2657".encode('utf-8') : "\u265d".encode('utf-8')
-	end	
-end
-
-class Knight
-	attr_reader :color, :position, :moves, :unicode, :captured
-	attr_writer :position, :moves, :captured
-	def initialize(color, position)
-		@color = color
-		@position = position
-		@initial_position = position
-		@moves = 0
-		@captured = false
-		@unicode = color == :w ? "\u2658".encode('utf-8') : "\u265e".encode('utf-8')
-	end	
-end
-
-class King
-	attr_reader :color, :position, :moves, :unicode, :captured
-	attr_writer :position, :moves, :captured
-	def initialize(color, position)
-		@color = color
-		@position = position
-		@initial_position = position
-		@moves = 0
-		@captured = false
-		@unicode = color == :w ? "\u2654".encode('utf-8') : "\u265a".encode('utf-8')
-	end	
-end
-
-class Queen
-	attr_reader :color, :position, :moves, :unicode, :captured
-	attr_writer :position, :moves, :captured
-	def initialize(color, position)
-		@color = color
-		@position = position
-		@initial_position = position
-		@moves = 0
-		@captured = false
-		@unicode = color == :w ? "\u2655".encode('utf-8') : "\u265b".encode('utf-8')
-	end	
-end
-
