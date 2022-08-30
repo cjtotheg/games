@@ -6,10 +6,10 @@ Wordle
 -------
 
 Play, or get clues based on a game you're playing. The ways to play are to put the files in a directory, open your command line, and do either of these two commands:
-
+````
 ruby wordle.rb #this will play the game 
 ruby wordle.rb solve #this will show you possible answers
-
+````
 Wordle Play
 -----
 
