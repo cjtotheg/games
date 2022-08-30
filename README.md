@@ -12,6 +12,8 @@ ruby wordle.rb solve #this will show you possible answers
 
 Wordle Play
 -----
+
+````
 cj@admins-Mini-2 wordle % ruby wordle.rb 
 Enter a word, we'll tell you what is right or wrong in the pmap:nmap format.
 Enter a 5 letter word: 
@@ -97,10 +99,12 @@ unused   | b c e f h j k l p q u v w x
 
 You win! The word is: fluke
 
+````
 
 Wordle Solve
 ---------------------------------------
 
+````
 cj@admins-Mini-2 wordle % ruby wordle.rb solve
 
 word:pmap:nmap
@@ -158,3 +162,5 @@ lunge "|"pmap:--u-e"|"nmap:lu---"|ltrs:"eul"
 flume "|"pmap:flu-e"|"nmap:-----"|ltrs:"eulf"
 Alphabet: b c e f h j k l p q u v w x
 Enter a 5 letter word map (or type help): 
+
+````
