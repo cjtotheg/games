@@ -1,5 +1,6 @@
 require "./game.rb"
 require "./pieces.rb"
+require "./pawn_move.rb"
 
 class Chess
 	def initialize
