@@ -42,7 +42,6 @@ class Pawn
 				c5: [:b6, :c6, :d6],
 				c6: [:b7, :c7, :d7],
 				c7: [:b8, :c8, :d8],
-				foo #this is where I stopped
 				d2: [:d3, :e3, :e2, :e1, :d1, :c1, :c2, :c3],
 				d3: [:d4, :e4, :e3, :e2, :d2, :c2, :c3, :c4],
 				d4: [:d5, :e5, :e4, :e3, :d3, :c3, :c4, :c5],
