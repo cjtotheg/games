@@ -9,6 +9,75 @@ class Game
 
 		@@captured = []
 
+		# "The Attack Matrix"
+		@@attacks = {
+			a1: { w: [], b: [] },
+			a2: { w: [], b: [] },
+			a3: { w: [], b: [] },
+			a4: { w: [], b: [] },
+			a5: { w: [], b: [] },
+			a6: { w: [], b: [] },
+			a7: { w: [], b: [] },
+			a8: { w: [], b: [] },
+			b1: { w: [], b: [] },
+			b2: { w: [], b: [] },
+			b3: { w: [], b: [] },
+			b4: { w: [], b: [] },
+			b5: { w: [], b: [] },
+			b6: { w: [], b: [] },
+			b7: { w: [], b: [] },
+			b8: { w: [], b: [] },
+			c1: { w: [], b: [] },
+			c2: { w: [], b: [] },
+			c3: { w: [], b: [] },
+			c4: { w: [], b: [] },
+			c5: { w: [], b: [] },
+			c6: { w: [], b: [] },
+			c7: { w: [], b: [] },
+			c8: { w: [], b: [] },
+			d1: { w: [], b: [] },
+			d2: { w: [], b: [] },
+			d3: { w: [], b: [] },
+			d4: { w: [], b: [] },
+			d5: { w: [], b: [] },
+			d6: { w: [], b: [] },
+			d7: { w: [], b: [] },
+			d8: { w: [], b: [] },
+			e1: { w: [], b: [] },
+			e2: { w: [], b: [] },
+			e3: { w: [], b: [] },
+			e4: { w: [], b: [] },
+			e5: { w: [], b: [] },
+			e6: { w: [], b: [] },
+			e7: { w: [], b: [] },
+			e8: { w: [], b: [] },
+			f1: { w: [], b: [] },
+			f2: { w: [], b: [] },
+			f3: { w: [], b: [] },
+			f4: { w: [], b: [] },
+			f5: { w: [], b: [] },
+			f6: { w: [], b: [] },
+			f7: { w: [], b: [] },
+			f8: { w: [], b: [] },
+			g1: { w: [], b: [] },
+			g2: { w: [], b: [] },
+			g3: { w: [], b: [] },
+			g4: { w: [], b: [] },
+			g5: { w: [], b: [] },
+			g6: { w: [], b: [] },
+			g7: { w: [], b: [] },
+			g8: { w: [], b: [] },
+			h1: { w: [], b: [] },
+			h2: { w: [], b: [] },
+			h3: { w: [], b: [] },
+			h4: { w: [], b: [] },
+			h5: { w: [], b: [] },
+			h6: { w: [], b: [] },
+			h7: { w: [], b: [] },
+			h8: { w: [], b: [] }
+		}
+
+		# "The Board"
 		@@board = {
 			a1: Rook.new(color: :w, file:  "a", rank: 1),
 			a2: Pawn.new(color: :w, file:  "a", rank: 2),
@@ -98,15 +167,32 @@ class Game
 		#who moved?
 		m = pgn_move.chars
 
-		if m[0].match?(/[abcdefgh]/) #pawn move
-			return PawnMove.new(color: color, pgn_move: pgn_move)
+		#pawn move
+		if m[0].match?(/[abcdefgh]/) 
+			pawn = PawnMove.new
+			return pawn.move(color: color, pgn_move: pgn_move)
 		end
 
+		#king move
 		if m[0] == "K"
-			return KingMove.new(color: color, pgn_move: pgn_move)
+			king = KingMove.new
+			return king.move(color: color, pgn_move: pgn_move)
 		end
 
+		puts "Invalid move entered."
 		return false
+
+	end
+
+	######
+	## "The Attack Matrix"
+	## identify any square that is under attack by any piece on the board
+	## this is updated every move
+	def update_attacks
+
+		@@board.each do |pos,val|
+			foo #make the attack matrix off of Piece.valid_moves
+		end
 
 	end
 

@@ -1,8 +1,7 @@
 
 
 class PawnMove < Game
-    def initialize(color:, pgn_move:)
-        return move(color: color, pgn_move: pgn_move)
+    def initialize
     end
 
 	def move(color:, pgn_move:)
