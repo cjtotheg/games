@@ -152,24 +152,33 @@ class Game
 	def move(color:)
 		puts color == :w ? "White move: " : "Black move: "
 		pgn_move = $stdin.gets.strip
-		if update_board(color, pgn_move)
-			@moves.push pgn_move
-			return true
-		else
-			return false
-		end
-	end
 
-	#return true if move valid and board updated
-	#return false if move invalid, do not update board
-	def update_board(color, pgn_move)
-		
+		from = ""
+		to = ""
+
 		#who moved?
 		m = pgn_move.chars
 
 		#pawn move
-		if m[0].match?(/[abcdefgh]/) 
-			pawn = PawnMove.new
+		if m[0].match?(/[abcdefgh]/)
+
+			if m[1].match?(/x/) #take
+				to = "#{m[2]}#{m[3]}".to_sym
+			else
+				to = "#{m[0]}#{m[1]}".to_sym
+			end
+
+			#get the pawn that's moving
+			@@board.each do |square, piece|
+				next if piece.class != Pawn
+				next if piece.color != color
+				if piece.file == m[0]
+					#check if this pawn can do the move
+					piece.legal_move?(to)
+				end
+			end
+
+
 			return pawn.move(color: color, pgn_move: pgn_move)
 		end
 

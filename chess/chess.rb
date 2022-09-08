@@ -1,6 +1,7 @@
 require "./game.rb"
 require "./pieces.rb"
-require "./pawn_move.rb"
+#require "./pawn_move.rb"
+require "./pawn.rb"
 require "./king_move.rb"
 
 class Chess
