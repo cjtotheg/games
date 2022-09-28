@@ -1,7 +1,6 @@
 
+require_relative '../../app/pawn.rb'
 require_relative '../../app/chess.rb'
-
-module Chess
   
   RSpec.describe 'The Chess module Game class board' do 
     
@@ -116,4 +115,3 @@ module Chess
 
   end
 
-end
