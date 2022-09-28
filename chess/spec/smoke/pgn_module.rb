@@ -14,9 +14,10 @@ module Chess
       p move
 
       expect(move.class).to eq(Hash)
-      expect(move[:piece_id]).to eq(:wP4)
-      expect(move[:from]).to eq(:e2)
-      expect(move[:to]).to eq(:e4)
+      expect(move[:piece_id]).to eq(:wP5)
+      expect(move[:from]).to eq("e2")
+      expect(move[:to]).to eq("e4")
+      expect(move[:error]).to eq(nil)
 
     end
 
