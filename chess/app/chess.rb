@@ -5,14 +5,9 @@ require_relative 'queen.rb'
 require_relative 'king.rb'
 require_relative 'pawn.rb'
 
+DEBUG = ENV["RACK_ENV"] == "test" ? true : false
 
-class Game
-
-  attr_reader :board
-
-  def initialize
-    
-    @board = {
+BOARD = {
       "a1" => Rook.new(id: :wR1, color: :white),
       "b1" => Knight.new(id: :wN1, color: :white),
       "c1" => Bishop.new(id: :wB1, color: :white),
@@ -70,14 +65,16 @@ class Game
       "g7" => Pawn.new(id: :bP7, color: :black),
       "h7" => Pawn.new(id: :bP8, color: :black),
       "a8" => Rook.new(id: :bR1, color: :black),
-      "b8" => Knight.new(id: :bN1, color: :black), 
-      "c8" => Bishop.new(id: :bB1, color: :black), 
+      "b8" => Knight.new(id: :bN1, color: :black),
+      "c8" => Bishop.new(id: :bB1, color: :black),
       "d8" => Queen.new(id: :bQ1, color: :black),
       "e8" => King.new(id: :bK1, color: :black),
       "f8" => Bishop.new(id: :bB2, color: :black),
       "g8" => Knight.new(id: :bK2, color: :black),
-      "h8" => Rook.new(id: :bR2, color: :black),
-    }
-  end
+      "h8" => Rook.new(id: :bR2, color: :black),  
+}
+
+
+class Game
 
 end

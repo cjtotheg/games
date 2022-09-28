@@ -1,8 +1,7 @@
-require_relative 'chess.rb'
-
-class Pawn < Game
+class Pawn 
 
   attr_reader :id, :color, :moves
+  attr_writer :moves
 
   def initialize(id:, color:)
     @id = id
@@ -10,13 +9,11 @@ class Pawn < Game
     @moves = 0
   end
 
-  def move(board:, pgn_move:, color:)
+  def move(pgn_move:, color:)
 
     move = {
-      piece_id: nil,
       from: nil,
       to: nil,
-      error: nil
     }
 
     take = false
@@ -27,15 +24,15 @@ class Pawn < Game
     ##### WHICH PAWN?????
     pgn_a = pgn_move.chars
     pawns = []
-    board.each do |key, val|
-      if pgn_a[0] == key.chars[0] && val.class == Pawn && val.color == color
+    BOARD.each do |key, val|
+      if pgn_a[0] == key.chars[0] && val.class == Pawn && val.color == color 
         pawns.push key
       end
     end
-
+    
     if pawns.length == 0
-      move[:error] = "Invalid pawn move."
-      return move
+      p "Invalid pawn move."
+      return false
     end
 
     if pawns.length > 1
@@ -43,12 +40,16 @@ class Pawn < Game
     end
 
     if pawns.length == 1
-      move[:piece_id] = board[pawns[0]].id
       move[:from] = pawns[0]
       move[:to] = pgn_move
     end
 
-    return move
+    ###### DO THE MOVE
+    BOARD[move[:to]] = BOARD[move[:from]]
+    BOARD[move[:to]].moves += 1
+    BOARD[move[:from]] = nil
+
+    return true 
 
   end
 

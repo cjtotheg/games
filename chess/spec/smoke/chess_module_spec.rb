@@ -1,5 +1,4 @@
 
-require_relative '../../app/pawn.rb'
 require_relative '../../app/chess.rb'
   
   RSpec.describe 'The Chess module Game class board' do 
@@ -7,35 +6,35 @@ require_relative '../../app/chess.rb'
     let(:game) { Game.new }  
 
     it 'has a rook in position a1' do
-      expect(game.board["a1"].class).to eq(Rook)
+      expect(BOARD["a1"].class).to eq(Rook)
     end
 
     it 'the rook in position a1 is white' do
-      rook = game.board["a1"]
+      rook = BOARD["a1"]
       expect(rook.color).to eq(:white)
     end
 
     it 'the rook in position a1 has 0 moves' do 
-      rook = game.board["a1"]
+      rook = BOARD["a1"]
       expect(rook.moves).to eq(0)
     end
 
     it 'the rook in position a1 has an id of :wR1' do
-      rook = game.board["a1"]
+      rook = BOARD["a1"]
       expect(rook.id).to eq(:wR1)
     end
 
     it 'has a pawn in position a2' do
-      expect(game.board["a2"].class).to eq(Pawn)
+      expect(BOARD["a2"].class).to eq(Pawn)
     end
 
     it 'the pawn in position a2 has an id of :wP1' do
-      pawn = game.board["a2"]
+      pawn = BOARD["a2"]
       expect(pawn.id).to eq(:wP1)
     end
 
     it 'has a vacant a3 square' do
-      expect(game.board["a3"].class).to eq(NilClass)
+      expect(BOARD["a3"].class).to eq(NilClass)
     end 
 
     it 'has all the pieces where they should be' do
@@ -108,7 +107,7 @@ require_relative '../../app/chess.rb'
       }
 
       expected_setup.each do |key, val|
-        expect(game.board[key].class).to eq(val)
+        expect(BOARD[key].class).to eq(val)
       end
 
     end
