@@ -1,14 +1,13 @@
 
-require_relative '../../app/chess.rb'
+
+#Board->Move->Game
 
 module Chess
-  RSpec.describe 'The board' do 
-    
-    let(:game) { Game.new }  
+  class Board
+   attr_reader :board
 
-    it 'has all the pieces where they should be' do
-      
-      expected_setup = {
+    def initialize
+      @board = {
        a1: :wR1,
        b1: :wN1,
        c1: :wB1,
@@ -74,12 +73,23 @@ module Chess
        g8: :bN2,
        h8: :bR2}
 
-      expected_setup.each do |key, val|
-        expect(game.board[key]).to eq(val)
-      end
+    end
 
+    def update_board(
+      from_space:,
+      from_space_occupant:,
+      to_space:,
+      to_space_occupant:)
+
+      puts "update_board args: #{from_space}, #{from_space_occupant}, #{to_space},#{to_space_occupant}"
+
+      @board[from_space] = from_space_occupant
+      @board[to_space] = to_space_occupant 
+    end
+
+    def space_to_strings(key:, val:)
+      {"loc" => "#{key}", "occ" => "#{val}"}
     end
 
   end
-
 end
