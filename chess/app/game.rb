@@ -1,14 +1,8 @@
-
-require_relative '../../app/chess.rb'
-
 module Chess
-  RSpec.describe 'The Chess module Game class board' do 
-    
-    let(:game) { Game.new }  
-
-    it 'has all the pieces where they should be' do
-      
-      expected_setup = {
+  class Game
+    attr_accessor :board
+    def initialize
+      @board = {
        a1: :wR1,
        b1: :wN1,
        c1: :wB1,
@@ -18,7 +12,7 @@ module Chess
        g1: :wN2,
        h1: :wR2,
        a2: :wP1,
-       b2: :wP2,
+       b2: :wP2, 
        c2: :wP3,
        d2: :wP4,
        e2: :wP5,
@@ -74,12 +68,7 @@ module Chess
        g8: :bN2,
        h8: :bR2}
 
-      expected_setup.each do |key, val|
-        expect(game.board[key]).to eq(val)
-      end
-
     end
-
   end
-
 end
+

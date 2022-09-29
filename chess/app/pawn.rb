@@ -1,4 +1,5 @@
-class Pawn 
+module Chess
+class Pawn < Game 
 
   attr_reader :id, :color, :moves
   attr_writer :moves
@@ -52,5 +53,7 @@ class Pawn
     return true 
 
   end
+
+end
 
 end
