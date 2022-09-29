@@ -1,12 +1,8 @@
 module Chess
 
-  class Pawn
-  
-    def space_to_strings(key:, val:)
-      {"loc" => "#{key}", "occ" => "#{val}"}
-    end
+  class Pawn < Interpreter
 
-    def describe_pgn_move(board:, pgn_move:, color:)
+    def interpret_pgn_move(board:, pgn_move:, color:)
       move = {
         valid: false,
         error: nil,

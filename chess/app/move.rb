@@ -14,7 +14,7 @@ module Chess
     def pawn_move(pgn_move:, color:)
       
       pawn = Pawn.new
-      result = pawn.describe_pgn_move(board: board, pgn_move: pgn_move, color: color)
+      result = pawn.interpret_pgn_move(board: board, pgn_move: pgn_move, color: color)
 
       if result[:valid] == false
         puts result[:error]
