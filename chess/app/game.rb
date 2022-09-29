@@ -68,7 +68,21 @@ module Chess
        g8: :bN2,
        h8: :bR2}
 
+       @pieces = {
+         wP5: Pawn.new(id: :wP5, color: :white)
+       }
+
     end
+
+    def move(pgn_move:, color:)
+      
+      pawn = @pieces[:wP5]  
+      
+      pawn.move(pgn_move: pgn_move, color: :white)      
+
+    end
+
   end
+
 end
 
