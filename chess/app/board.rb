@@ -12,10 +12,10 @@ module Chess
       squares: {
         a1: :wR1, b1: :wN1, c1: :wB1, d1: :wQ1, e1: :wK,  f1: :wB2, g1: :wN2, h1: :wR2,
         a2: :wP1, b2: :wP2, c2: :wP3, d2: :wP4, e2: :wP5, f2: :wP6, g2: :wP7, h2: :wP8,
-        a3: nil,  b3: nil,  c3: nil,  d3: nil,  e3: nil,  f3: nil,  g3: nil,  h3: nil,
-        a4: nil,  b4: nil,  c4: nil,  d4: nil,  e4: nil,  f4: nil,  g4: nil,  h4: nil,
-        a5: nil,  b5: nil,  c5: nil,  d5: nil,  e5: nil,  f5: nil,  g5: nil,  h5: nil,
-        a6: nil,  b6: nil,  c6: nil,  d6: nil,  e6: nil,  f6: nil,  g6: nil,  h6: nil,
+        a3: :vac, b3: :vac, c3: :vac, d3: :vac, e3: :vac, f3: :vac, g3: :vac, h3: :vac,
+        a4: :vac, b4: :vac, c4: :vac, d4: :vac, e4: :vac, f4: :vac, g4: :vac, h4: :vac,
+        a5: :vac, b5: :vac, c5: :vac, d5: :vac, e5: :vac, f5: :vac, g5: :vac, h5: :vac,
+        a6: :vac, b6: :vac, c6: :vac, d6: :vac, e6: :vac, f6: :vac, g6: :vac, h6: :vac,
         a7: :bP1, b7: :bP2, c7: :bP3, d7: :bP4, e7: :bP5, f7: :bP6, g7: :bP7, h7: :bP8,
         a8: :bR1, b8: :bN1, c8: :bB1, d8: :bQ1, e8: :bK,  f8: :bB2, g8: :bN2, h8: :bR2
       },
@@ -57,85 +57,86 @@ module Chess
       update_pieces
 
     end
-
-    def update_pawn_attacks(pawn_id)
-      
-      color = pawn_id.match(/^w/) ? 'w' : 'b'
-     
-      attacks = []
-
-      pawn_square = nil
-      @board[:squares].each do |key, val| 
-        if val == pawn_id 
-          pawn_square = key
-        end
-      end
-      raise 'pawn not found' if pawn_square == nil
-
-      if color == 'w'
-        #pawns start on rank 2
-        #can move two forward if first move
-        #can only move one forward if moved already
-        #can capture diagonally only
-
-        ####WHAT IS THE PATTERN???
-        Pawn::WHITE_PAWN_MOVES.each do |square,moves|
-          if pawn_square == square
-            moves.each do |possible_square|
-
-              #if pawn has > 1 moves, it can only move one square ahead
-              #a pawn cannot move ahead if another piece is in front of it
-              #a pawn can attack diagonally if the piece is of the other color
-              array_possible_square = possible_square.to_s.chars
-              attacks.push possible_square if @board[:squares][possible_square]
-            end
-          end
-        end
-
-
-      end
-
-      return moves
-
-    end
-
+    
     def update_pieces
       #board[:squares] is the source of truth!!
       #build the attacks, threats, and captured based on the current board
       
-      #find and address any captured pieces
+      #reset all pieces to rebuild later
       @board[:pieces].each do |key, val|
-        next if @board[:squares].has_value?(key)
-        @board[:pieces][key][:captured] = true
+        @board[:pieces][key][:moves] = []
         @board[:pieces][key][:attacks] = []
         @board[:pieces][key][:threats] = []
       end
-      
-      @board[:pieces].each do |key, val|
-        next if val[:captured]
-        
-        #this is where the fun happens!
-        #start with the attacks
-        #then build the threats off the attacks
+     
+      #update moves, attacks, and threats 
+      @board[:pieces].each do |piece, piece_data|
+        next if piece_data[:captured]
 
-        case key
+        case piece
         when /P/
-          @board[:pieces][key][:attacks] = update_pawn_attacks(key)
+          possible_moves = Pawn::get_possible_moves(board: @board, pawn_id: piece)
+          @board[:pieces][piece][:attacks] = possible_moves[:attacks]
+          @board[:pieces][piece][:moves] = possible_moves[:moves]
+        end
+
+        next if piece_data[:attacks].count == 0
+        piece_data[:attacks].each do |attack|
+          @board[:pieces][@board[:squares][attack]][:threats].push get_square_of_piece(piece)
         end
 
       end
+
+    end
+
+    def get_square_of_piece(piece)
+      @board[:squares].each do |square, occupant| 
+        return square if occupant == piece
+      end
+      return nil
     end
 
     def update_board(
+      captured_piece:,
       from_space:,
       from_space_occupant:,
       to_space:,
       to_space_occupant:,
       pgn_move:)
-
+      
+      if captured_piece != nil
+        @board[:pieces][captured_piece][:captured] = true
+      end
       @board[:squares][from_space] = from_space_occupant
       @board[:squares][to_space] = to_space_occupant 
-      @board[:pieces][to_space_occupant][:moves].push pgn_move
+
+      #board[:squares] is the source of truth!!
+      #build the attacks, threats, and captured based on the current board
+
+      #reset all pieces to rebuild later
+      @board[:pieces].each do |key, val|
+        @board[:pieces][key][:moves] = []
+        @board[:pieces][key][:attacks] = []
+        @board[:pieces][key][:threats] = []
+      end
+
+      #update moves, attacks, and threats
+      @board[:pieces].each do |piece, piece_data|
+        next if piece_data[:captured]
+
+        case piece
+        when /P/
+          possible_moves = Pawn::get_possible_moves(board: @board, pawn_id: piece)
+          @board[:pieces][piece][:attacks] = possible_moves[:attacks]
+          @board[:pieces][piece][:moves] = possible_moves[:moves]
+        end
+
+        next if piece_data[:attacks].count == 0
+        piece_data[:attacks].each do |attack|
+          @board[:pieces][@board[:squares][attack]][:threats].push get_square_of_piece(piece)
+        end
+
+      end
     end
 
     def space_to_strings(key:, val:)
@@ -147,7 +148,7 @@ module Chess
       @board[:squares].each do |key,val|
 
         case val
-        when nil
+        when :vac
           val = " "
         when /wP/
           val = "\u2659".encode('utf-8')
@@ -198,7 +199,13 @@ module Chess
       puts "  +---+---+---+---+---+---+---+---+"
       puts "    a   b   c   d   e   f   g   h "
       puts "\n\n"
-      true
+
+      puts "Status of pieces:"
+      @board[:pieces].each do |piece, meta|
+        puts "#{piece} c:#{meta[:captured]} m:#{meta[:moves]} a:#{meta[:attacks]} t:#{meta[:threats]}"
+      end
+      
+      return true
     end
 
   end
