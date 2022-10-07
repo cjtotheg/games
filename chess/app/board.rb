@@ -4,9 +4,12 @@
 
 module Chess
   class Board
-   attr_reader :board, :pieces
+    attr_reader :board, :pgn
 
     def initialize
+
+      #put couplets of moves in like this: ["e4","Nf6"] etc.
+      @pgn = [] 
 
       @board = { 
       squares: {
@@ -20,56 +23,94 @@ module Chess
         a8: :bR1, b8: :bN1, c8: :bB1, d8: :bQ1, e8: :bK,  f8: :bB2, g8: :bN2, h8: :bR2
       },
       pieces: {
-        wP1: {captured: false, moves: [], attacks: [], threats: []},
-        wP2: {captured: false, moves: [], attacks: [], threats: []},
-        wP3: {captured: false, moves: [], attacks: [], threats: []},
-        wP4: {captured: false, moves: [], attacks: [], threats: []},
-        wP5: {captured: false, moves: [], attacks: [], threats: []},
-        wP6: {captured: false, moves: [], attacks: [], threats: []},
-        wP7: {captured: false, moves: [], attacks: [], threats: []},
-        wP8: {captured: false, moves: [], attacks: [], threats: []},
-        wR1: {captured: false, moves: [], attacks: [], threats: []},
-        wN1: {captured: false, moves: [], attacks: [], threats: []},
-        wB1: {captured: false, moves: [], attacks: [], threats: []},
-        wQ1: {captured: false, moves: [], attacks: [], threats: []},
-        wK:  {captured: false, moves: [], attacks: [], threats: []},
-        wB2: {captured: false, moves: [], attacks: [], threats: []},
-        wN2: {captured: false, moves: [], attacks: [], threats: []},
-        wR2: {captured: false, moves: [], attacks: [], threats: []},
-        bP1: {captured: false, moves: [], attacks: [], threats: []},
-        bP2: {captured: false, moves: [], attacks: [], threats: []},
-        bP3: {captured: false, moves: [], attacks: [], threats: []},
-        bP4: {captured: false, moves: [], attacks: [], threats: []},
-        bP5: {captured: false, moves: [], attacks: [], threats: []},
-        bP6: {captured: false, moves: [], attacks: [], threats: []},
-        bP7: {captured: false, moves: [], attacks: [], threats: []},
-        bP8: {captured: false, moves: [], attacks: [], threats: []},
-        bR1: {captured: false, moves: [], attacks: [], threats: []},
-        bN1: {captured: false, moves: [], attacks: [], threats: []},
-        bB1: {captured: false, moves: [], attacks: [], threats: []},
-        bQ1: {captured: false, moves: [], attacks: [], threats: []},
-        bK:  {captured: false, moves: [], attacks: [], threats: []},
-        bB2: {captured: false, moves: [], attacks: [], threats: []},
-        bN2: {captured: false, moves: [], attacks: [], threats: []},
-        bR2: {captured: false, moves: [], attacks: [], threats: []}
+        wP1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        wP2: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        wP3: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        wP4: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        wP5: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        wP6: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        wP7: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        wP8: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        wR1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        wN1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        wB1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        wQ1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        wK:  {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        wB2: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        wN2: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        wR2: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        bP1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        bP2: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        bP3: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        bP4: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        bP5: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        bP6: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        bP7: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        bP8: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        bR1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        bN1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        bB1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        bQ1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        bK:  {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        bB2: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        bN2: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
+        bR2: {captured: false, move_count: 0, moves: [], attacks: [], threats: []}
       }}
 
       update_pieces
 
     end
-    
+   
+    def record_pgn_move(pgn_move:)
+      @pgn.push(pgn_move)
+    end
+
+    def print_pgn_moves
+      pgn_moves_touple = []
+      pgn_string = ""
+      set = []
+      move_count = 0
+      @pgn.each_with_index do |move, index|
+        
+        move_count += 1
+        
+        if move_count % 2 != 0
+          set.push move
+
+          if @pgn.count == (index + 1) #one move in last set
+            set.push nil
+            pgn_moves_touple.push set
+          end
+
+        end
+
+        if move_count % 2 == 0
+          set.push move
+          pgn_moves_touple.push set
+          set = []
+        end
+
+      end
+
+      pgn_moves_touple.each_with_index do |touple, index|
+        pgn_string += "#{index + 1}.#{touple[0]} #{touple[1]} "
+      end
+
+      puts pgn_string
+    end
+
     def update_pieces
       #board[:squares] is the source of truth!!
       #build the attacks, threats, and captured based on the current board
       
-      #reset all pieces to rebuild later
+      #reset all pieces to rebuild from the board
       @board[:pieces].each do |key, val|
         @board[:pieces][key][:moves] = []
         @board[:pieces][key][:attacks] = []
         @board[:pieces][key][:threats] = []
       end
      
-      #update moves, attacks, and threats 
+      #update moves, attacks, and threats from the current board 
       @board[:pieces].each do |piece, piece_data|
         next if piece_data[:captured]
 
@@ -200,11 +241,15 @@ module Chess
       puts "    a   b   c   d   e   f   g   h "
       puts "\n\n"
 
-      puts "Status of pieces:"
-      @board[:pieces].each do |piece, meta|
-        puts "#{piece} c:#{meta[:captured]} m:#{meta[:moves]} a:#{meta[:attacks]} t:#{meta[:threats]}"
-      end
-      
+      if VERBOSE
+        puts "Status of pieces:"
+        @board[:pieces].each do |piece, meta|
+          puts "#{piece} c:#{meta[:captured]} m:#{meta[:moves]} a:#{meta[:attacks]} t:#{meta[:threats]}"
+        end
+      end 
+
+      print_pgn_moves
+
       return true
     end
 

@@ -2,11 +2,11 @@
 module Chess
 
   class Move < Board
-   
+
     def white_move(pgn_move:)
       do_move(pgn_move: pgn_move, color: "w")
     end
-    
+
     def black_move(pgn_move:)
       do_move(pgn_move: pgn_move, color: "b")
     end
@@ -16,6 +16,10 @@ module Chess
       case pgn_move
       when /^[abcdefgh]/
         valid = pawn_move(pgn_move: pgn_move, color: color)
+      end
+
+      if valid
+        @pgn.push pgn_move
       end
 
       return valid

@@ -211,11 +211,11 @@ module Chess
       end
 
       if color == 'b'
-        lt_diagonal_attack = a_pawn_square[0] == "h" ? nil : "#{(a_pawn_square[0].ord - 1).chr}#{a_pawn_square[1].to_i - 1}".to_sym
-        rt_diagonal_attack = a_pawn_square[0] == "a" ? nil : "#{a_pawn_square[0].next}#{a_pawn_square[1].to_i - 1}".to_sym
+        lt_diagonal_attack = a_pawn_square[0] == "h" ? nil : "#{(a_pawn_square[0].ord + 1).chr}#{a_pawn_square[1].to_i - 1}".to_sym #this is buggy
+        rt_diagonal_attack = a_pawn_square[0] == "a" ? nil : "#{(a_pawn_square[0].ord - 1).chr}#{a_pawn_square[1].to_i - 1}".to_sym
       end
 
-      #puts "pawn_id: #{pawn_id} pawn_square: #{pawn_square} color: #{color} one_square_ahead: #{one_square_ahead} two_squares_ahead: #{two_squares_ahead} lt_diagonal_attack: #{lt_diagonal_attack} rt_diagonal_attack: #{rt_diagonal_attack}"
+      puts "pawn_id: #{pawn_id} pawn_square: #{pawn_square} color: #{color} one_square_ahead: #{one_square_ahead} two_squares_ahead: #{two_squares_ahead} lt_diagonal_attack: #{lt_diagonal_attack} rt_diagonal_attack: #{rt_diagonal_attack}" if VERBOSE
 
       pawn_moves = color == 'w' ? WHITE_PAWN_MOVES : BLACK_PAWN_MOVES
       pawn_moves.each do |square,moves|

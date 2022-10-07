@@ -1,3 +1,4 @@
+require_relative 'config.rb'
 require_relative 'board.rb'
 require_relative 'move.rb'
 require_relative 'game.rb'
