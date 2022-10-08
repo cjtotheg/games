@@ -29,6 +29,10 @@ module Chess
         expect(game.board[:pieces][:wP5][:attacks]).to eq([])
       end
 
+      it 'board[:pieces][:wP5][:move_count] is now one' do
+        expect(game.board[:pieces][:wP5][:move_count]).to eq(1)
+      end
+
     end
 
      context 'The board is printed.' do
@@ -62,6 +66,10 @@ module Chess
         expect(game.board[:pieces][:bP5][:attacks]).to eq([])
       end
   
+      it 'updates board[:pieces][:bP5][:move_count] to equal 1' do
+        expect(game.board[:pieces][:bP5][:move_count]).to eq(1)
+      end
+
     end
 
     context 'The board is printed.' do
@@ -92,6 +100,10 @@ module Chess
 
       it 'updates board[:pieces][:wP4][:threats] to equal [:e5]' do
         expect(game.board[:pieces][:wP4][:threats]).to eq([:e5])
+      end
+
+      it 'updates board[:pieces][:wP4][:move_count] to equal 1' do
+        expect(game.board[:pieces][:wP4][:move_count]).to eq(1)
       end
 
     end
@@ -126,6 +138,10 @@ module Chess
         expect(game.board[:pieces][:bP5][:moves]).to eq([:d3])
       end
 
+      it 'black pawn :bP5 has two moves counted' do
+        expect(game.board[:pieces][:bP5][:move_count]).to eq(2)
+      end
+
     end
 
     context 'The board is printed.' do
@@ -158,6 +174,10 @@ module Chess
       it 'pawn :wP5 has one move to :e6' do
         expect(game.board[:pieces][:wP5][:moves]).to eq([:e6])
       end
+
+      it 'pawn :wP5 has two moves in its count' do
+        expect(game.board[:pieces][:wP5][:move_count]).to eq(2)
+      end      
 
       it 'pawn :wP5 has no attacks' do
         expect(game.board[:pieces][:wP5][:attacks].count).to eq(0)
@@ -197,9 +217,11 @@ module Chess
 
     end
 
-    context 'White does en passant with pawn :wP5 on :e5' do
+    context 'White moves: exf6 - White does en passant with pawn :wP5 on :e5' do
 
-      it 'captures black pawn :bP6 on :f5'
+      it 'captures black pawn :bP6 on :f5' do
+        expect(game.white_move(pgn_move: "exf6")).to eq(true)
+      end
 
       it 'board shows :wP5 on square :f6'
 

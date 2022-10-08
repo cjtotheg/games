@@ -12,6 +12,7 @@ module Chess
     end
 
     def do_move(pgn_move:, color:)
+      
       valid = false
       case pgn_move
       when /^[abcdefgh]/
@@ -19,7 +20,7 @@ module Chess
       end
 
       if valid
-        @pgn.push pgn_move
+        @board[:pgn].push pgn_move
       end
 
       return valid
@@ -45,6 +46,9 @@ module Chess
           pgn_move: result[:pgn_move])
 
         update_pieces
+
+        #En passant??
+        Pawn::get_en_passant_attacks(board: board, pgn_move: pgn_move, color: color)
 
         return true
 

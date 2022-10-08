@@ -1,6 +1,6 @@
 module Chess
 
-  class Pawn
+  class Pawn < Pieces
 
     WHITE_PAWN_MOVES = {
       a2: [:a3, :a4, :b3],
@@ -215,7 +215,8 @@ module Chess
         rt_diagonal_attack = a_pawn_square[0] == "a" ? nil : "#{(a_pawn_square[0].ord - 1).chr}#{a_pawn_square[1].to_i - 1}".to_sym
       end
 
-      puts "pawn_id: #{pawn_id} pawn_square: #{pawn_square} color: #{color} one_square_ahead: #{one_square_ahead} two_squares_ahead: #{two_squares_ahead} lt_diagonal_attack: #{lt_diagonal_attack} rt_diagonal_attack: #{rt_diagonal_attack}" if VERBOSE
+
+      #puts "pawn_id: #{pawn_id} pawn_square: #{pawn_square} color: #{color} one_square_ahead: #{one_square_ahead} two_squares_ahead: #{two_squares_ahead} lt_diagonal_attack: #{lt_diagonal_attack} rt_diagonal_attack: #{rt_diagonal_attack}" if VERBOSE
 
       pawn_moves = color == 'w' ? WHITE_PAWN_MOVES : BLACK_PAWN_MOVES
       pawn_moves.each do |square,moves|
@@ -253,9 +254,7 @@ module Chess
               possible_moves[:attacks].push possible_square
             end
 
-
-            #EN PASSANT
-            #a pawn can attack a pawn in passing if pawn is next to it and it moves two (en passant)
+            #EN PASSANT happens after all this
 
           end
 
@@ -264,6 +263,40 @@ module Chess
       end
 
       return possible_moves
+
+    end
+
+
+    #en passant possible? get attack squares. this has to be run AFTER the board is updated with the last move.
+    def self.get_en_passant_attacks(board:, pgn_move:, color:)
+
+      board[:squares].each do |square, piece|
+        
+        a_square = square.to_s.chars
+        a_piece  = piece.to_s.chars
+
+        #if any white pawns on 5 check if en passant in play due to a black pawn moving two squares on first move last time
+        if a_square[1] == "5" && a_piece[0] == "w" && color == "b"
+          
+          #possible for this pawn if black pawn on rank 5 next to this pawn with one move, who just moved! lol
+          last_move = board[:pgn].last
+ 
+          puts "EN PASSANT POSSIBLE" 
+          puts "last move: #{last_move}"
+          puts "this move: #{color} #{pgn_move}"
+
+          #check if moves_count is 1
+          pawn_moved = get_piece_data_from_square(board: board, target_square: pgn_move.to_sym)
+          if pawn_moved[:move_count] == 1
+            puts "put attack into pawn"
+          end
+
+        end
+
+        #if any black pawns on 4 check if en passant in play
+
+      end
+
 
     end
 
