@@ -195,16 +195,16 @@ module Chess
 
     context ':bP6 moves "f5" creating a threat for itself because of en passant by :wP5 on :e5' do
     
-      it 'makes the move successfully' do
+      it ':bP6 makes the move "f5" successfully' do
         expect(game.black_move(pgn_move: "f5")).to eq(true)
       end
 
-      it 'has a threat from :e5' do
+      it ':bP6 has a threat from :e5' do
         expect(game.board[:pieces][:bP6][:threats]).to eq([:e5])
       end
 
-      it 'white pawn :wP5 has an attack on square :f6' do
-        expect(game.board[:pieces][:wP5][:attacks]).to eq([:f5])
+      it 'white pawn :wP5 has an attack on square :f6 because of en passant' do
+        expect(game.board[:pieces][:wP5][:attacks]).to eq([:f6])
       end
 
     end
@@ -219,9 +219,11 @@ module Chess
 
     context 'White moves: exf6 - White does en passant with pawn :wP5 on :e5' do
 
-      it 'captures black pawn :bP6 on :f5' do
+      it 'white moves exf6 "en passant"' do
         expect(game.white_move(pgn_move: "exf6")).to eq(true)
       end
+
+      it 'captures black pawn :bP6 on :f5'
 
       it 'board shows :wP5 on square :f6'
 

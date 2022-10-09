@@ -141,6 +141,19 @@ module Chess
       if pawns.length == 1
 
         if take 
+          
+          #En passant?
+          puts "==========\n\n"
+          puts " Pawn::interpret_pgn_move #{pgn_move} take - en passant?"
+
+          a_en_passants = self.get_en_passant_moves(board: board, pgn_move: pgn_move, color: color)
+
+          if a_en_passants.count && VERBOSE
+            puts "En passant"
+            a_en_passants.each { |en_passant| p en_passant }
+          end
+
+
           attacked_square = "#{a_pgn[2]}#{a_pgn[3]}".to_sym
           if board[:pieces][pawns[0][1]][:attacks].bsearch{|square| square == attacked_square}
             move[:valid] = true
@@ -268,27 +281,48 @@ module Chess
 
 
     #en passant possible? get attack squares. this has to be run AFTER the board is updated with the last move.
-    def self.get_en_passant_attacks(board:, pgn_move:, color:)
+    def self.get_en_passant_moves(board:, pgn_move:, color:)
+
+      en_passant_moves = [] #should be array of hashes like: {piece_id, threats, attacks}
+      a_pgn_move = pgn_move.to_s.chars
 
       board[:squares].each do |square, piece|
         
         a_square = square.to_s.chars
         a_piece  = piece.to_s.chars
 
-        #if any white pawns on 5 check if en passant in play due to a black pawn moving two squares on first move last time
+        #if any white pawns on 5, check if en passant in play due to a black pawn moving two squares on first move (this move)
         if a_square[1] == "5" && a_piece[0] == "w" && color == "b"
-          
-          #possible for this pawn if black pawn on rank 5 next to this pawn with one move, who just moved! lol
-          last_move = board[:pgn].last
- 
-          puts "EN PASSANT POSSIBLE" 
-          puts "last move: #{last_move}"
-          puts "this move: #{color} #{pgn_move}"
 
           #check if moves_count is 1
-          pawn_moved = get_piece_data_from_square(board: board, target_square: pgn_move.to_sym)
-          if pawn_moved[:move_count] == 1
-            puts "put attack into pawn"
+          pawn_that_moved = get_piece_data_from_square(board: board, target_square: pgn_move.to_sym)
+          if pawn_that_moved[:data][:move_count] == 1
+                        
+            #put attack(s) into white pawn(s) on rank 5
+            #put threat into black pawn on rank 5
+            #possible for this pawn if black pawn on rank 5 next to this pawn with one move, who just moved! lol
+            puts "EN PASSANT POSSIBLE"
+            puts "this move: #{color} #{pgn_move}"
+
+            #attacks
+            puts "#{piece} on #{square} can attack #{pgn_move} en passant by moving to #{a_pgn_move[0]}#{a_square[1].to_i + 1} "
+            en_passant = {
+              piece_id: piece,
+              attacks: ["#{a_pgn_move[0]}#{a_square[1].to_i + 1}".to_sym],
+              threats: []
+            }
+            en_passant_moves.push(en_passant)
+
+            #threats
+            puts "#{pawn_that_moved[:piece_id]} on #{square} has a threat from #{piece}"
+            en_passant = {
+              piece_id: pawn_that_moved[:piece_id],
+              attacks: [],
+              threats: [square]
+            }
+            en_passant_moves.push(en_passant)
+            
+
           end
 
         end
@@ -297,6 +331,7 @@ module Chess
 
       end
 
+      return en_passant_moves
 
     end
 

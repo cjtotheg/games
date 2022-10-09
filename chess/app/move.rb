@@ -47,8 +47,22 @@ module Chess
 
         update_pieces
 
-        #En passant??
-        Pawn::get_en_passant_attacks(board: board, pgn_move: pgn_move, color: color)
+        #En passant?? Update @board if so..
+        a_en_passants = Pawn::get_en_passant_moves(board: board, pgn_move: pgn_move, color: color)
+       
+        if a_en_passants.count && VERBOSE
+          puts "En passant"
+          a_en_passants.each { |en_passant| p en_passant }
+        end
+
+        a_en_passants.each do |en_passant|
+          if en_passant[:attacks].count > 0
+            @board[:pieces][en_passant[:piece_id]][:attacks].concat en_passant[:attacks]
+          end
+          if en_passant[:threats].count > 0
+            @board[:pieces][en_passant[:piece_id]][:threats].concat en_passant[:threats]
+          end
+        end
 
         return true
 

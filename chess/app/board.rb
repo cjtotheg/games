@@ -146,10 +146,28 @@ module Chess
       to_space_occupant:,
       pgn_move:)
 
+      a_pgn_move = pgn_move.chars
+
       #increase the move_count for to_space_occupant
       @board[:pieces][to_space_occupant][:move_count] += 1
 
       if captured_piece != nil
+        
+        puts "============="
+        puts "Board.update_board - captured piece: #{captured_piece}"
+       
+        if captured_piece == :vac #check if its "en passant"
+          puts "En Passant???"
+          if to_space_occupant.match(/P/) && a_pgn_move.last == "6" || a_pgn_move.last == "3"
+            #see if the moving pawn registers an attack for this file one space back
+            #if so, check if there is a pawn of the opposite color there, and if it has
+            #only one move registered.
+            raise "this is where I left off"
+            
+          end
+        end
+        puts "============="
+
         @board[:pieces][captured_piece][:captured] = true
       end
       @board[:squares][from_space] = from_space_occupant
