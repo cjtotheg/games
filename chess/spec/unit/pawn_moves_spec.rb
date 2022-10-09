@@ -35,14 +35,6 @@ module Chess
 
     end
 
-     context 'The board is printed.' do
-
-      it 'Verify printed board looks correct.' do
-        expect(game.print_board).to eq(true)
-      end
-
-    end
-
     context 'Black moves "e5".' do
   
       it 'is made successfully' do 
@@ -68,14 +60,6 @@ module Chess
   
       it 'updates board[:pieces][:bP5][:move_count] to equal 1' do
         expect(game.board[:pieces][:bP5][:move_count]).to eq(1)
-      end
-
-    end
-
-    context 'The board is printed.' do
-
-      it 'Verify printed board looks correct.' do
-        expect(game.print_board).to eq(true)
       end
 
     end
@@ -108,14 +92,6 @@ module Chess
 
     end
 
-    context 'The board is printed.' do
-
-      it 'Verify printed board looks correct.' do
-        expect(game.print_board).to eq(true)
-      end
-
-    end
-
     context 'Black moves "exd4" to take white pawn on d4' do
 
       it 'makes the move successfully' do
@@ -143,16 +119,7 @@ module Chess
       end
 
     end
-
-    context 'The board is printed.' do
-
-      it 'Verify printed board looks correct.' do
-        expect(game.print_board).to eq(true)
-      end      
-
-    end
-
-
+    
     context 'White moves "e5"' do
     
       it 'makes the move successfully' do
@@ -182,15 +149,7 @@ module Chess
       it 'pawn :wP5 has no attacks' do
         expect(game.board[:pieces][:wP5][:attacks].count).to eq(0)
       end
-
-    end
-
-    context 'The board is printed.' do
-
-      it 'Verify printed board looks correct.' do
-        expect(game.print_board).to eq(true)
-      end      
-
+      
     end
 
     context ':bP6 moves "f5" creating a threat for itself because of en passant by :wP5 on :e5' do
@@ -199,20 +158,12 @@ module Chess
         expect(game.black_move(pgn_move: "f5")).to eq(true)
       end
 
-      it ':bP6 has a threat from :e5' do
-        expect(game.board[:pieces][:bP6][:threats]).to eq([:e5])
+      it ':bP6 has an en passant threat from :e5' do
+        expect(game.board[:pieces][:bP6][:ep_threats]).to eq([:e5])
       end
 
-      it 'white pawn :wP5 has an attack on square :f6 because of en passant' do
-        expect(game.board[:pieces][:wP5][:attacks]).to eq([:f6])
-      end
-
-    end
-
-    context 'The board is printed.' do
-
-      it 'Verify printed board looks correct.' do
-        expect(game.print_board).to eq(true)
+      it 'white pawn :wP5 has an en passant attack on square :f6' do
+        expect(game.board[:pieces][:wP5][:ep_attacks]).to eq([:f6])
       end
 
     end
@@ -223,23 +174,112 @@ module Chess
         expect(game.white_move(pgn_move: "exf6")).to eq(true)
       end
 
-      it 'captures black pawn :bP6 on :f5'
+      it 'captures black pawn :bP6 on :f5' do
+        expect(game.board[:pieces][:bP6][:captured]).to eq(true)
+      end
 
-      it 'board shows :wP5 on square :f6'
+      it 'board shows :wP5 on square :f6' do
+        expect(game.board[:squares][:f6]).to eq(:wP5)
+      end
+
+      it 'ep_attacks for :wP5 are blank' do
+        expect(game.board[:pieces][:wP5][:ep_attacks]).to eq([])
+      end
 
       it ':wP5 now has threats from :d8(:bQ), :g7(:bP7), and :g8(:bN2)'
+        #expect(game.board[:pieces][:wP5][:threats]).to eq([:d8, :g7, :g8])
 
-      it ':wP5 has move :f7 only'
+      it ':wP5 has move :f7 only' do
+        expect(game.board[:pieces][:wP5][:moves]).to eq([:f7])
+      end
 
-      it ':wP5 can attack :g7'
+      it ':wP5 can attack :g7' do
+        expect(game.board[:pieces][:wP5][:attacks]).to eq([:g7])
+      end
 
     end
 
-    context 'The board is printed.' do
+    context 'Black moves "d3", there are two black pawns on that file now' do
 
-      it 'Verify printed board looks correct.' do
-        expect(game.print_board).to eq(true)
-      end      
+      it 'move is successful' do
+        expect(game.black_move(pgn_move: "d3")).to eq(true)
+      end
+
+      it 'board has :bP5 on :d3' do
+        expect(game.board[:squares][:d3]).to eq(:bP5)
+      end
+
+      it ':bP5 has :c2 as an attack' do
+        expect(game.board[:pieces][:bP5][:attacks]).to eq([:c2])
+      end
+
+      it ':bP5 has bishop on :f1 as a threat'
+
+      it ':wP3 has pawn on :d3 as a threat' do
+        expect(game.board[:pieces][:wP3][:threats]).to eq([:d3])
+      end
+
+    end
+
+    context 'White moves "f7", putting the black king in check and attacking knight on :g1'do
+
+      it 'move is successful' do
+        expect(game.white_move(pgn_move: "f7")).to eq(true)
+      end
+      
+      it 'board has :wP5 on :f7' do
+        expect(game.board[:squares][:f7]).to eq(:wP5)
+      end
+      
+      it ':wP5 has king on :e8 as a threat'
+
+      it ':wP5 has king on :e8 as an attack (check) and knight :g8 as an attack' do
+        expect(game.board[:pieces][:wP5][:attacks]).to eq([:e8, :g8])
+      end
+
+    end
+
+    context 'Black is forced to clear the check' do
+      
+      it 'black moves king to :e7'
+
+      it 'Verify printed board looks correct.'      
+
+    end
+
+    context 'Black moves "d2", there are two pawns on that file now, king :e1 is in check, and bishop :c1 is attacked' do
+
+      it 'move is successful' do
+        expect(game.black_move(pgn_move: "d2")).to eq(true)
+      end
+
+      it 'board has :bP5 on :d2' do
+        expect(game.board[:squares][:d2]).to eq(:bP5)
+      end
+
+      it 'king :e1 is in check'
+
+      it ':bP5 has queen :e1 as a threat'
+
+      it ':bP5 has king :d1 as a threat'
+
+      it ':bP5 has bishop :c1 as a threat'
+
+      it ':bP5 has :c1 as an attack and king :e1 as an attack' do
+        expect(game.board[:pieces][:bP5][:attacks]).to eq([:c1, :e1])
+      end
+
+    end
+
+   context 'White moves "fxg8" both taking the knight on g8 and getting promoted' do
+
+      it 'move is successful' do
+        expect(game.white_move(pgn_move: "fxg8")).to eq(true)
+      end
+
+      it 'knight on :g8 is captured'
+
+      it 'pawn is promoted, board has :wQ2 on :g8'
 
     end
 

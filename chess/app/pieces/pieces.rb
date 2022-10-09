@@ -24,6 +24,13 @@ module Chess
       
     end
 
+    def self.get_square_of_piece(board:, piece:)
+      board[:squares].each do |square, occupant|
+        return square if occupant == piece
+      end
+      return nil
+    end
+
   end
 
 end

@@ -122,6 +122,7 @@ module Chess
   
       ##### WHICH PAWN?????
       a_pgn = pgn_move.chars
+      pawn = {:square => nil, :id => nil} 
       pawns = []
       board[:squares].each do |square, occupant|
         next if occupant == :vac
@@ -135,48 +136,82 @@ module Chess
       end
   
       if pawns.length > 1
-        move[:error] = "more than one pawn on file. not handled yet."
+        pawns.each do |square, occupant|
+          target_square = take ? "#{a_pgn[2]}#{a_pgn[3]}".to_sym : pgn_move.to_sym
+          if board[:pieces][occupant][:moves].bsearch{|m| m == target_square} ||
+             board[:pieces][occupant][:attacks].bsearch{|m| m == target_square} ||
+             board[:pieces][occupant][:ep_attacks].bsearch{|m| m == target_square}
+            pawn[:square] = square
+            pawn[:id] = occupant
+          end
+        end
       end
   
       if pawns.length == 1
+        pawn[:square] = pawns[0][0]
+        pawn[:id]     = pawns[0][1]
+      end
 
-        if take 
-          
-          #En passant?
-          puts "==========\n\n"
-          puts " Pawn::interpret_pgn_move #{pgn_move} take - en passant?"
+      if pawn == nil
+      
+        move[:error] = "invalid pawn move"
+      
+      else #build the move
 
-          a_en_passants = self.get_en_passant_moves(board: board, pgn_move: pgn_move, color: color)
+        if take
 
-          if a_en_passants.count && VERBOSE
-            puts "En passant"
-            a_en_passants.each { |en_passant| p en_passant }
-          end
-
-
+          en_passant = false
           attacked_square = "#{a_pgn[2]}#{a_pgn[3]}".to_sym
-          if board[:pieces][pawns[0][1]][:attacks].bsearch{|square| square == attacked_square}
-            move[:valid] = true
-            move[:captured_piece] = board[:squares][attacked_square]
-            move[:from_space] = pawns[0][0]
-            move[:from_space_occupant] = :vac
-            move[:to_space] = attacked_square
-            move[:to_space_occupant] = pawns[0][1]
-          else
-            move[:valid] = false
-            move[:error] = "Invalid pawn take move."
+
+          #En passant?
+          board[:pieces].each do |piece, data|
+            next unless piece.match(/P/) #only looking at pawns here
+            if data[:ep_attacks].bsearch{|square| square == attacked_square }
+              board[:pieces].each do |attacked_piece, attacked_piece_data|
+                next unless attacked_piece.match(/P/) #only looking at pawns still
+                attacking_piece_square = self.get_square_of_piece(board: board, piece: piece)
+                if attacked_piece_data[:ep_threats].bsearch{|square| square == attacking_piece_square}
+                  en_passant = true
+
+                  move[:valid] = true
+                  move[:captured_piece] = attacked_piece
+                  move[:from_space] = attacking_piece_square
+                  move[:from_space_occupant] = :vac
+                  move[:to_space] = attacked_square
+                  move[:to_space_occupant] = pawn[:id]
+                end
+              end
+            end
           end
-        else
-          if board[:pieces][pawns[0][1]][:moves].bsearch{|square| square == pgn_move.to_sym}
-            move[:valid] = true
-            move[:from_space] = pawns[0][0]
-            move[:from_space_occupant] = :vac
-            move[:to_space] = pgn_move.to_sym
-            move[:to_space_occupant] = pawns[0][1]
-          else
-            move[:valid] = false
-            move[:error] = "Invalid pawn take move."
+
+          unless en_passant #regular pawn take move
+            
+            if board[:pieces][pawn[:id]][:attacks].bsearch{|square| square == attacked_square}
+              move[:valid] = true
+              move[:captured_piece] = board[:squares][attacked_square]
+              move[:from_space] = pawn[:square]
+              move[:from_space_occupant] = :vac
+              move[:to_space] = attacked_square
+              move[:to_space_occupant] = pawn[:id]
+            else
+              move[:valid] = false
+              move[:error] = "Invalid pawn take move."
+            end
+
           end
+
+        else #regular pawn forward move
+
+            if board[:pieces][pawn[:id]][:moves].bsearch{|square| square == pgn_move.to_sym}
+              move[:valid] = true
+              move[:from_space] = pawn[:square]
+              move[:from_space_occupant] = :vac
+              move[:to_space] = pgn_move.to_sym
+              move[:to_space_occupant] = pawn[:id]
+            else
+              move[:valid] = false
+              move[:error] = "Invalid pawn take move."
+            end
 
         end
 
