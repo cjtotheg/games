@@ -302,7 +302,7 @@ module Chess
               possible_moves[:attacks].push possible_square
             end
 
-            #EN PASSANT happens after all this
+
 
           end
 
@@ -333,14 +333,15 @@ module Chess
           pawn_that_moved = get_piece_data_from_square(board: board, target_square: pgn_move.to_sym)
           if pawn_that_moved[:data][:move_count] == 1
                         
-            #put attack(s) into white pawn(s) on rank 5
-            #put threat into black pawn on rank 5
             #possible for this pawn if black pawn on rank 5 next to this pawn with one move, who just moved! lol
-            puts "EN PASSANT POSSIBLE"
-            puts "this move: #{color} #{pgn_move}"
+            if VERBOSE
+              puts "EN PASSANT POSSIBLE"
+              puts "this move: #{color} #{pgn_move}"
+              puts "#{piece} on #{square} can attack #{pgn_move} en passant by moving to #{a_pgn_move[0]}#{a_square[1].to_i + 1} "
+              puts "#{pawn_that_moved[:piece_id]} on #{square} has a threat from #{piece}"
+            end
 
             #attacks
-            puts "#{piece} on #{square} can attack #{pgn_move} en passant by moving to #{a_pgn_move[0]}#{a_square[1].to_i + 1} "
             en_passant = {
               piece_id: piece,
               attacks: ["#{a_pgn_move[0]}#{a_square[1].to_i + 1}".to_sym],
@@ -349,7 +350,6 @@ module Chess
             en_passant_moves.push(en_passant)
 
             #threats
-            puts "#{pawn_that_moved[:piece_id]} on #{square} has a threat from #{piece}"
             en_passant = {
               piece_id: pawn_that_moved[:piece_id],
               attacks: [],

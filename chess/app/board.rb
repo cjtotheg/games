@@ -146,6 +146,29 @@ module Chess
       return nil
     end
 
+    def get_promoted(letter:, color:)
+      raise "Invalid promotion" unless letter.match(/[QBNR]/) && color.match(/[wb]/)
+      existing = []
+      @board[:pieces].each do |piece, data|
+        a_piece = piece.to_s.chars
+        if a_piece[0] == color && a_piece[1] == letter
+          existing.push piece
+        end
+      end
+      promoted = existing.sort.last
+      return "#{color}#{letter}#{promoted.to_s.chars[2].to_i + 1}".to_sym
+    end
+
+    def create_piece(piece_id:)
+      #only for promotions Q,B,N,R - does not place it on the board!
+      @board[:pieces][piece_id] = {
+        captured: false,
+        moves: [],
+        attacks: [],
+        threats: []
+      }
+    end
+
     def update_board(
       captured_piece:,
       from_space:,
@@ -160,11 +183,32 @@ module Chess
       if captured_piece != nil
         @board[:pieces][captured_piece][:captured] = true
       end
+
+      #pawn promotion
+      if to_space_occupant.match(/P/) && to_space.match(/8/) || to_space.match(/1/)
+        
+        #have to remove pawn from pieces
+        @board[:pieces].delete(to_space_occupant) #pawn vanishes!
+
+        color = to_space_occupant.match?(/^w/) ? 'w' : 'b'
+        puts "Pawn promotion! What do you want? Type: Q,B,N,R"
+        puts "Giving you a queen now by default!"
+        to_space_occupant = get_promoted(letter: "Q", color: color)
+        puts "to_space_occupant: #{to_space_occupant}"
+        create_piece(piece_id: to_space_occupant)
+
+      end
+
+      #move the piece (set it in place!)
       @board[:squares][from_space] = from_space_occupant
       @board[:squares][to_space] = to_space_occupant 
 
+      #===============
+      #
       #board[:squares] is the source of truth!!
-      
+      #
+      #==============
+
       #en passant is a special case, so we'll sweep through again since its the only move in chess
       #where the captured piece is not occupied by the attacking piece.
       @board[:pieces].each do |piece, data|
@@ -172,7 +216,7 @@ module Chess
           @board[:squares][get_square_of_piece(piece)] = :vac
         end
       end
-       
+     
       #build the attacks, threats, and captured based on the current board
 
       #reset all pieces to rebuild later
