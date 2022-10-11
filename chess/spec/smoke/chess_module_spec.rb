@@ -25,10 +25,6 @@ module Chess
 
     end
 
-    it 'the pieces should print to the console' do
-      expect(game.print_board).to eq(true)
-    end
-
   end
 
 end

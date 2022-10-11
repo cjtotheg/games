@@ -186,8 +186,18 @@ module Chess
         expect(game.board[:pieces][:wP5][:ep_attacks]).to eq([])
       end
 
-      it ':wP5 now has threats from :d8(:bQ), :g7(:bP7), and :g8(:bN2)'
-        #expect(game.board[:pieces][:wP5][:threats]).to eq([:d8, :g7, :g8])
+      it ':wP5 now has a threat from the Queen :bQ  on :d8' do
+        pending("Need to implement queen moves")
+        expect(game.board[:pieces][:wP5][:threats]).to include(:d8)
+      end
+
+      it ':wP5 has a threat from :bN2 on :g8' do
+        expect(game.board[:pieces][:wP5][:threats]).to include(:g8)
+      end
+
+      it ':wP5 has a threat from :bP7 on :g7' do
+        expect(game.board[:pieces][:wP5][:threats]).to include(:g7)
+      end 
 
       it ':wP5 has move :f7 only' do
         expect(game.board[:pieces][:wP5][:moves]).to eq([:f7])
@@ -213,7 +223,10 @@ module Chess
         expect(game.board[:pieces][:bP5][:attacks]).to eq([:c2])
       end
 
-      it ':bP5 has bishop on :f1 as a threat'
+      it ':bP5 has bishop on :f1 as a threat' do
+        pending("Bishop moves are not implemented yet")
+        expect(game.board[:pieces][:bP5][:threats]).to include(:f1)
+      end
 
       it ':wP3 has pawn on :d3 as a threat' do
         expect(game.board[:pieces][:wP3][:threats]).to eq([:d3])

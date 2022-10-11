@@ -27,7 +27,14 @@ module Chess
         expect(game.board[:pieces][:bP8][:moves]).to eq([:h6, :h5])
 
       end
-      it 'Each knight has its moves set.'
+
+      it 'Each knight has its moves set.' do
+        expect(game.board[:pieces][:wN1][:moves]).to eq([:c3, :a3])
+        expect(game.board[:pieces][:wN2][:moves]).to eq([:h3, :f3])
+        expect(game.board[:pieces][:bN1][:moves]).to eq([:c6, :a6])
+        expect(game.board[:pieces][:bN2][:moves]).to eq([:h6, :f6])        
+      end
+      
     end
 
     context 'The board[:pieces][piece][:move_count] is set.' do
@@ -68,14 +75,6 @@ module Chess
         game.board[:pieces].each do |key,val|
           expect(val[:captured]).to eq(false)
         end
-      end
-
-    end
-
-    context 'When the board is printed.' do
-
-      it 'The pieces should be in the correct starting position.' do
-        expect(game.print_board).to eq(true)
       end
 
     end

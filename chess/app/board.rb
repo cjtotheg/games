@@ -122,12 +122,18 @@ module Chess
       #update moves, attacks, and threats from the current board 
       @board[:pieces].each do |piece, piece_data|
         next if piece_data[:captured]
+        possible_moves = nil
 
         case piece
-        when /P/
+        when /P/ #Pawns
           possible_moves = Pawn::get_possible_moves(board: @board, pawn_id: piece)
+        when /N/ #Knights
+          possible_moves = Knight::get_possible_moves(board: @board, knight_id: piece)
+        end
+        
+        if possible_moves 
           @board[:pieces][piece][:attacks] = possible_moves[:attacks]
-          @board[:pieces][piece][:moves] = possible_moves[:moves]
+          @board[:pieces][piece][:moves]   = possible_moves[:moves]
         end
 
         next if piece_data[:attacks].count == 0
@@ -191,10 +197,7 @@ module Chess
         @board[:pieces].delete(to_space_occupant) #pawn vanishes!
 
         color = to_space_occupant.match?(/^w/) ? 'w' : 'b'
-        puts "Pawn promotion! What do you want? Type: Q,B,N,R"
-        puts "Giving you a queen now by default!"
         to_space_occupant = get_promoted(letter: "Q", color: color)
-        puts "to_space_occupant: #{to_space_occupant}"
         create_piece(piece_id: to_space_occupant)
 
       end
