@@ -132,22 +132,75 @@ module Chess
 
       ## Which knight?
       a_pgn = pgn_move.chars
-      knight = {:square => nil, :id => nil}
-      knights = []
+      candidates = []
       board[:squares].each do |square, occupant|
         next if occupant == :vac
-        if occupant.match(/N/) && occupant.match(color)
-          knights.push [square, occupant]
+        if occupant.match(/N/) && occupant.to_s.chars[0].match(color)
+          big_stud = {:square => square, :id => occupant}
+          candidates.push big_stud
         end
       end
 
-      if knights.count == 0
+      if candidates.count == 0
+        raise "no knights found"
         move[:error] = "no knights were found"
       end
-
-      p knights
-      raise "working on knights"
       
+      #what can we set in move so far??
+      if a_pgn.length == 3
+        move[:to_space] = "#{a_pgn[1]}#{a_pgn[2]}".to_sym
+      end
+      if a_pgn.length == 4 && take == true
+        move[:to_space] = "#{a_pgn[2]}#{a_pgn[3]}".to_sym
+      end
+      if a_pgn.length == 4 && take == false
+        move[:to_space] = "#{a_pgn[2]}#{a_pgn[3]}".to_sym
+      end
+      if a_pgn.length > 5
+        raise "Error, not handled. Is this a double attack move like: Ndxd6???"
+      end
+
+      puts "============= KNIGHTS =============="
+      knights = []
+      puts "pgn: #{pgn_move}"
+      puts "color: #{color}"
+      puts "candidates:"
+      p candidates
+      candidates.each do |candidate|
+        KNIGHT_MOVES.each do |on_square, moves|
+          if on_square == candidate[:square]
+            moves.each do |to_square|
+              if to_square == move[:to_space]
+                knights.push candidate
+              end
+            end
+          end
+        end 
+      end
+      puts "knight(s) that can do the move"
+      p knights
+      
+      if knights.length > 1
+        raise "More than one knight can do this move. Not handled yet."
+      end
+
+      knight = knights.first
+
+      move[:valid] = true
+      move[:from_space] = knight[:square]
+      move[:from_space_occupant] = :vac
+      move[:to_space_occupant] = knight[:id]
+
+      puts "move:"
+      move.each do |key, val|
+        print "  #{key}: #{val}\n"
+      end
+      puts "===================================="
+      
+      if take
+        raise "Not handled yet"
+      end
+
       return move
 
     end
