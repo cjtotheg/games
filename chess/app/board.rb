@@ -4,9 +4,13 @@
 
 module Chess
   class Board
-    attr_reader :board
+    attr_reader :board, :next_move
 
     def initialize
+
+      @user_error_messages = [] #array of strings. If set, move is not made.
+
+      @next_move = 'w' #this switches when a valid move is made
 
       @board = {
         pgn: [], #put couplets of moves in like this: ["e4","Nf6"] etc.
@@ -185,6 +189,10 @@ module Chess
 
       #increase the move_count for to_space_occupant
       @board[:pieces][to_space_occupant][:move_count] += 1
+      
+      #set the color and @next_move
+      color = to_space_occupant.match?(/^w/) ? 'w' : 'b'
+      @next_move = color == 'w' ? 'b' : 'w'
 
       if captured_piece != nil
         @board[:pieces][captured_piece][:captured] = true
@@ -196,7 +204,6 @@ module Chess
         #have to remove pawn from pieces
         @board[:pieces].delete(to_space_occupant) #pawn vanishes!
 
-        color = to_space_occupant.match?(/^w/) ? 'w' : 'b'
         to_space_occupant = get_promoted(letter: "Q", color: color)
         create_piece(piece_id: to_space_occupant)
 
@@ -314,8 +321,10 @@ module Chess
       puts "      +---+---+---+---+---+---+---+---+"
       puts "        a   b   c   d   e   f   g   h "
       puts "\n"
-
-      #print_piece_data
+      
+      if VERBOSE || PRINT_PIECES_EVERY_MOVE
+        print_piece_data
+      end
 
       return true
     end

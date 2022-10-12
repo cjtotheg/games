@@ -3,17 +3,34 @@ module Chess
 
   class Move < Board
 
-    def white_move(pgn_move:)
-      do_move(pgn_move: pgn_move, color: "w")
+    def white_move(pgn_move)
+      success = do_move(pgn_move: pgn_move, color: "w")
+      handle_errors
+      return success
     end
 
-    def black_move(pgn_move:)
-      do_move(pgn_move: pgn_move, color: "b")
+    def black_move(pgn_move)
+      success = do_move(pgn_move: pgn_move, color: "b")
+      handle_errors
+      return success
+    end
+
+    def handle_errors
+      @user_error_messages.each do |message|
+        puts "ERROR: #{message}"
+      end
+      @user_error_messages = []
     end
 
     def do_move(pgn_move:, color:)
-      
+
       valid = false
+      
+      if @next_move != color
+        @user_error_messages.push "Move rejected because it is #{color == 'w' ? 'white' : 'black'} move."
+        return false #hard stop here if not this color's move.
+      end
+
       case pgn_move
       when /^[abcdefgh]/
         valid = pawn_move(pgn_move: pgn_move, color: color)
@@ -25,10 +42,10 @@ module Chess
         @board[:pgn].push pgn_move
       end
 
-      if VERBOSE
+      if VERBOSE || PRINT_BOARD_EVERY_MOVE
         print_board
       end
-
+      
       return valid
     end
 
@@ -37,7 +54,7 @@ module Chess
       result = Knight::interpret_pgn_move(board: board, pgn_move: pgn_move, color: color)
       
       if result[:valid] == false
-        puts result[:error]
+        @user_error_messages.push result[:error]
         return false
       end
 
@@ -66,7 +83,7 @@ module Chess
       result = Pawn::interpret_pgn_move(board: board, pgn_move: pgn_move, color: color)
 
       if result[:valid] == false
-        puts result[:error]
+        @user_error_messages.push result[:error]
         return false
       end
 

@@ -160,12 +160,12 @@ module Chess
         raise "Error, not handled. Is this a double attack move like: Ndxd6???"
       end
 
-      puts "============= KNIGHTS =============="
+      puts "============= KNIGHTS ==============" if VERBOSE
       knights = []
-      puts "pgn: #{pgn_move}"
-      puts "color: #{color}"
-      puts "candidates:"
-      p candidates
+      puts "pgn: #{pgn_move}" if VERBOSE
+      puts "color: #{color}" if VERBOSE
+      puts "candidates:" if VERBOSE
+      p candidates if VERBOSE
       candidates.each do |candidate|
         KNIGHT_MOVES.each do |on_square, moves|
           if on_square == candidate[:square]
@@ -177,29 +177,38 @@ module Chess
           end
         end 
       end
-      puts "knight(s) that can do the move"
-      p knights
+      puts "knight(s) that can do the move" if VERBOSE
+      p knights if VERBOSE
+      if knights.count == 0
+        move[:error] = "Invalid knight move."
+        return move
+      end
       
-      if knights.length > 1
+      if knights.count > 1
         raise "More than one knight can do this move. Not handled yet."
       end
 
       knight = knights.first
-
-      move[:valid] = true
-      move[:from_space] = knight[:square]
-      move[:from_space_occupant] = :vac
-      move[:to_space_occupant] = knight[:id]
-
-      puts "move:"
-      move.each do |key, val|
-        print "  #{key}: #{val}\n"
-      end
-      puts "===================================="
       
       if take
-        raise "Not handled yet"
+        move[:valid] = true
+        move[:captured_piece] = board[:squares][move[:to_space]]
+        move[:from_space] = knight[:square]
+        move[:from_space_occupant] = :vac
+        move[:to_space_occupant] = knight[:id]
+      else
+        move[:valid] = true
+        move[:from_space] = knight[:square]
+        move[:from_space_occupant] = :vac
+        move[:to_space_occupant] = knight[:id]
       end
+
+      puts "take: #{take}" if VERBOSE
+      puts "move:" if VERBOSE
+      move.each do |key, val|
+        print "  #{key}: #{val}\n" if VERBOSE
+      end
+      puts "====================================" if VERBOSE
 
       return move
 

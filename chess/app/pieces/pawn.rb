@@ -210,7 +210,7 @@ module Chess
               move[:to_space_occupant] = pawn[:id]
             else
               move[:valid] = false
-              move[:error] = "Invalid pawn take move."
+              move[:error] = "Invalid pawn move."
             end
 
         end
@@ -264,7 +264,7 @@ module Chess
       end
 
 
-      #puts "pawn_id: #{pawn_id} pawn_square: #{pawn_square} color: #{color} one_square_ahead: #{one_square_ahead} two_squares_ahead: #{two_squares_ahead} lt_diagonal_attack: #{lt_diagonal_attack} rt_diagonal_attack: #{rt_diagonal_attack}" if VERBOSE
+      puts "pawn_id: #{pawn_id} pawn_square: #{pawn_square} color: #{color} one_square_ahead: #{one_square_ahead} two_squares_ahead: #{two_squares_ahead} lt_diagonal_attack: #{lt_diagonal_attack} rt_diagonal_attack: #{rt_diagonal_attack}" if VERBOSE
 
       pawn_moves = color == 'w' ? WHITE_PAWN_MOVES : BLACK_PAWN_MOVES
       pawn_moves.each do |square,moves|
@@ -361,8 +361,6 @@ module Chess
           end
 
         end
-
-        #if any black pawns on 4 check if en passant in play
 
       end
 

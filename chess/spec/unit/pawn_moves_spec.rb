@@ -9,7 +9,7 @@ module Chess
     context 'White opens with "e4".' do
 
       it 'Move is made successfully.' do
-        result = game.white_move(pgn_move: "e4")
+        result = game.white_move("e4")
         expect(result).to eq(true)
       end
 
@@ -38,7 +38,7 @@ module Chess
     context 'Black moves "e5".' do
   
       it 'is made successfully' do 
-        result = game.black_move(pgn_move: "e5")
+        result = game.black_move("e5")
         expect(result).to eq(true)
       end
 
@@ -67,7 +67,7 @@ module Chess
     context 'White moves "d4"' do
   
       it 'makes the move successfully' do 
-        expect(game.white_move(pgn_move: "d4")).to eq(true)
+        expect(game.white_move("d4")).to eq(true)
       end
 
       it 'updates board[:pieces][:wP4][:attacks] to equal [:e5]' do
@@ -95,7 +95,7 @@ module Chess
     context 'Black moves "exd4" to take white pawn on d4' do
 
       it 'makes the move successfully' do
-        expect(game.black_move(pgn_move: "exd4")).to eq(true)
+        expect(game.black_move("exd4")).to eq(true)
       end 
 
       it 'white pawn :wP4 is captured' do
@@ -123,7 +123,7 @@ module Chess
     context 'White moves "e5"' do
     
       it 'makes the move successfully' do
-        expect(game.white_move(pgn_move: "e5")).to eq(true)
+        expect(game.white_move("e5")).to eq(true)
       end
 
       it 'pawn :wP5 is on :e5' do
@@ -155,7 +155,7 @@ module Chess
     context ':bP6 moves "f5" creating a threat for itself because of en passant by :wP5 on :e5' do
     
       it ':bP6 makes the move "f5" successfully' do
-        expect(game.black_move(pgn_move: "f5")).to eq(true)
+        expect(game.black_move("f5")).to eq(true)
       end
 
       it ':bP6 has an en passant threat from :e5' do
@@ -171,7 +171,7 @@ module Chess
     context 'White moves: exf6 - White does en passant with pawn :wP5 on :e5' do
 
       it 'white moves exf6 "en passant"' do
-        expect(game.white_move(pgn_move: "exf6")).to eq(true)
+        expect(game.white_move("exf6")).to eq(true)
       end
 
       it 'captures black pawn :bP6 on :f5' do
@@ -212,7 +212,7 @@ module Chess
     context 'Black moves "d3", there are two black pawns on that file now' do
 
       it 'move is successful' do
-        expect(game.black_move(pgn_move: "d3")).to eq(true)
+        expect(game.black_move("d3")).to eq(true)
       end
 
       it 'board has :bP5 on :d3' do
@@ -237,7 +237,7 @@ module Chess
     context 'White moves "f7", putting the black king in check and attacking knight on :g1'do
 
       it 'move is successful' do
-        expect(game.white_move(pgn_move: "f7")).to eq(true)
+        expect(game.white_move("f7")).to eq(true)
       end
       
       it 'board has :wP5 on :f7' do
@@ -265,7 +265,7 @@ module Chess
     context 'White moves "fxg8" both taking the knight on g8 and getting promoted' do
 
       it 'move is successful' do
-        expect(game.white_move(pgn_move: "fxg8")).to eq(true)
+        expect(game.white_move("fxg8")).to eq(true)
       end
 
       it 'knight :bN2 on :g8 is captured' do
@@ -289,7 +289,7 @@ module Chess
     context 'Black moves "d2", there are two pawns on that file now, king :e1 is in check, and bishop :c1 is attacked' do
 
       it 'move is successful' do
-        expect(game.black_move(pgn_move: "d2")).to eq(true)
+        expect(game.black_move("d2")).to eq(true)
       end
 
       it 'board has :bP5 on :d2' do
