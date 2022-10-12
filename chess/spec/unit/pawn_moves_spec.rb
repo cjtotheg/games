@@ -17,7 +17,7 @@ module Chess
         expect(game.board[:squares][:e4]).to eq(:wP5)
       end
 
-      it 'space :e2 is :vac' do
+      it 'square :e2 is :vac' do
         expect(game.board[:squares][:e2]).to eq(:vac)
       end
 
@@ -42,11 +42,11 @@ module Chess
         expect(result).to eq(true)
       end
 
-      it 'updates board space :e5 to be pawn :bP5' do
+      it 'updates board square :e5 to be pawn :bP5' do
         expect(game.board[:squares][:e5]).to eq(:bP5)
       end
 
-      it 'updates board space :e7 to be vacant' do
+      it 'updates board square :e7 to be vacant' do
         expect(game.board[:squares][:e7]).to eq(:vac)
       end
 
@@ -102,7 +102,7 @@ module Chess
         expect(game.board[:pieces][:wP4][:captured]).to eq(true)
       end
 
-      it 'black pawn :bP5 is on space :d4' do 
+      it 'black pawn :bP5 is on square :d4' do 
         expect(game.board[:squares][:d4]).to eq(:bP5)
       end
 

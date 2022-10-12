@@ -108,10 +108,10 @@ module Chess
         valid: false,
         error: nil,
         captured_piece: nil,
-        from_space: nil,
-        from_space_occupant: nil,
-        to_space: nil,
-        to_space_occupant: nil,
+        from_square: nil,
+        from_square_occupant: nil,
+        to_square: nil,
+        to_square_occupant: nil,
         pgn_move: pgn_move,
       }
   
@@ -175,10 +175,10 @@ module Chess
 
                   move[:valid] = true
                   move[:captured_piece] = attacked_piece
-                  move[:from_space] = attacking_piece_square
-                  move[:from_space_occupant] = :vac
-                  move[:to_space] = attacked_square
-                  move[:to_space_occupant] = pawn[:id]
+                  move[:from_square] = attacking_piece_square
+                  move[:from_square_occupant] = :vac
+                  move[:to_square] = attacked_square
+                  move[:to_square_occupant] = pawn[:id]
                 end
               end
             end
@@ -189,10 +189,10 @@ module Chess
             if board[:pieces][pawn[:id]][:attacks].bsearch{|square| square == attacked_square}
               move[:valid] = true
               move[:captured_piece] = board[:squares][attacked_square]
-              move[:from_space] = pawn[:square]
-              move[:from_space_occupant] = :vac
-              move[:to_space] = attacked_square
-              move[:to_space_occupant] = pawn[:id]
+              move[:from_square] = pawn[:square]
+              move[:from_square_occupant] = :vac
+              move[:to_square] = attacked_square
+              move[:to_square_occupant] = pawn[:id]
             else
               move[:valid] = false
               move[:error] = "Invalid pawn take move."
@@ -204,10 +204,10 @@ module Chess
 
             if board[:pieces][pawn[:id]][:moves].bsearch{|square| square == pgn_move.to_sym}
               move[:valid] = true
-              move[:from_space] = pawn[:square]
-              move[:from_space_occupant] = :vac
-              move[:to_space] = pgn_move.to_sym
-              move[:to_space_occupant] = pawn[:id]
+              move[:from_square] = pawn[:square]
+              move[:from_square_occupant] = :vac
+              move[:to_square] = pgn_move.to_sym
+              move[:to_square_occupant] = pawn[:id]
             else
               move[:valid] = false
               move[:error] = "Invalid pawn move."

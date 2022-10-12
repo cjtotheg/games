@@ -181,17 +181,17 @@ module Chess
 
     def update_board(
       captured_piece:,
-      from_space:,
-      from_space_occupant:,
-      to_space:,
-      to_space_occupant:,
+      from_square:,
+      from_square_occupant:,
+      to_square:,
+      to_square_occupant:,
       pgn_move:)
 
-      #increase the move_count for to_space_occupant
-      @board[:pieces][to_space_occupant][:move_count] += 1
+      #increase the move_count for to_square_occupant
+      @board[:pieces][to_square_occupant][:move_count] += 1
       
       #set the color and @next_move
-      color = to_space_occupant.match?(/^w/) ? 'w' : 'b'
+      color = to_square_occupant.match?(/^w/) ? 'w' : 'b'
       @next_move = color == 'w' ? 'b' : 'w'
 
       if captured_piece != nil
@@ -199,19 +199,19 @@ module Chess
       end
 
       #pawn promotion
-      if to_space_occupant.match(/P/) && to_space.match(/8/) || to_space.match(/1/)
+      if to_square_occupant.match(/P/) && to_square.match(/8/) || to_square.match(/1/)
         
         #have to remove pawn from pieces
-        @board[:pieces].delete(to_space_occupant) #pawn vanishes!
+        @board[:pieces].delete(to_square_occupant) #pawn vanishes!
 
-        to_space_occupant = get_promoted(letter: "Q", color: color)
-        create_piece(piece_id: to_space_occupant)
+        to_square_occupant = get_promoted(letter: "Q", color: color)
+        create_piece(piece_id: to_square_occupant)
 
       end
 
       #move the piece (set it in place!)
-      @board[:squares][from_space] = from_space_occupant
-      @board[:squares][to_space] = to_space_occupant 
+      @board[:squares][from_square] = from_square_occupant
+      @board[:squares][to_square] = to_square_occupant 
 
       #===============
       #
@@ -260,7 +260,7 @@ module Chess
       end
     end
 
-    def space_to_strings(key:, val:)
+    def square_to_strings(key:, val:)
       {"loc" => "#{key}", "occ" => "#{val}"}
     end
 

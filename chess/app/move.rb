@@ -36,10 +36,15 @@ module Chess
         valid = pawn_move(pgn_move: pgn_move, color: color)
       when /^N/
         valid = knight_move(pgn_move: pgn_move, color: color)
+      when /^K/
+        valid = king_move(pgn_move: pgn_move, color: color)
       end
 
       if valid
         @board[:pgn].push pgn_move
+      else
+        @user_error_messages.push "Move #{pgn_move} not recognized."
+        return false 
       end
 
       if VERBOSE || PRINT_BOARD_EVERY_MOVE
@@ -47,6 +52,34 @@ module Chess
       end
       
       return valid
+    end
+
+    def king_move(pgn_move:, color:)
+      
+      result = King::interpret_pgn_move(board: board, pgn_move: pgn_move, color: color)
+
+      if result[:valid] == false
+        @user_error_messages.push result[:error]
+        return false
+      end
+
+      if result[:valid] == true
+
+        ## do the move
+        update_board(
+          captured_piece: result[:captured_piece],
+          from_square: result[:from_square],
+          from_square_occupant: result[:from_square_occupant],
+          to_square: result[:to_square],
+          to_square_occupant: result[:to_square_occupant],
+          pgn_move: result[:pgn_move])
+
+        update_pieces
+
+        return true
+      end
+
+      raise "Something went wrong."
     end
 
     def knight_move(pgn_move:, color:)
@@ -63,10 +96,10 @@ module Chess
         ## do the move
         update_board(
           captured_piece: result[:captured_piece],
-          from_space: result[:from_space],
-          from_space_occupant: result[:from_space_occupant],
-          to_space: result[:to_space],
-          to_space_occupant: result[:to_space_occupant],
+          from_square: result[:from_square],
+          from_square_occupant: result[:from_square_occupant],
+          to_square: result[:to_square],
+          to_square_occupant: result[:to_square_occupant],
           pgn_move: result[:pgn_move])
 
         update_pieces
@@ -91,10 +124,10 @@ module Chess
         ## do the move
         update_board(
           captured_piece: result[:captured_piece],
-          from_space: result[:from_space],
-          from_space_occupant: result[:from_space_occupant],
-          to_space: result[:to_space],
-          to_space_occupant: result[:to_space_occupant],
+          from_square: result[:from_square],
+          from_square_occupant: result[:from_square_occupant],
+          to_square: result[:to_square],
+          to_square_occupant: result[:to_square_occupant],
           pgn_move: result[:pgn_move])
 
         update_pieces

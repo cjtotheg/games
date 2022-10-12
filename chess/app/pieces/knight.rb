@@ -118,10 +118,10 @@ module Chess
         valid: false,
         error: nil,
         captured_piece: nil,
-        from_space: nil,
-        from_space_occupant: nil,
-        to_space: nil,
-        to_space_occupant: nil,
+        from_square: nil,
+        from_square_occupant: nil,
+        to_square: nil,
+        to_square_occupant: nil,
         pgn_move: pgn_move,
       }
 
@@ -148,13 +148,13 @@ module Chess
       
       #what can we set in move so far??
       if a_pgn.length == 3
-        move[:to_space] = "#{a_pgn[1]}#{a_pgn[2]}".to_sym
+        move[:to_square] = "#{a_pgn[1]}#{a_pgn[2]}".to_sym
       end
       if a_pgn.length == 4 && take == true
-        move[:to_space] = "#{a_pgn[2]}#{a_pgn[3]}".to_sym
+        move[:to_square] = "#{a_pgn[2]}#{a_pgn[3]}".to_sym
       end
       if a_pgn.length == 4 && take == false
-        move[:to_space] = "#{a_pgn[2]}#{a_pgn[3]}".to_sym
+        move[:to_square] = "#{a_pgn[2]}#{a_pgn[3]}".to_sym
       end
       if a_pgn.length > 5
         raise "Error, not handled. Is this a double attack move like: Ndxd6???"
@@ -170,7 +170,7 @@ module Chess
         KNIGHT_MOVES.each do |on_square, moves|
           if on_square == candidate[:square]
             moves.each do |to_square|
-              if to_square == move[:to_space]
+              if to_square == move[:to_square]
                 knights.push candidate
               end
             end
@@ -192,15 +192,15 @@ module Chess
       
       if take
         move[:valid] = true
-        move[:captured_piece] = board[:squares][move[:to_space]]
-        move[:from_space] = knight[:square]
-        move[:from_space_occupant] = :vac
-        move[:to_space_occupant] = knight[:id]
+        move[:captured_piece] = board[:squares][move[:to_square]]
+        move[:from_square] = knight[:square]
+        move[:from_square_occupant] = :vac
+        move[:to_square_occupant] = knight[:id]
       else
         move[:valid] = true
-        move[:from_space] = knight[:square]
-        move[:from_space_occupant] = :vac
-        move[:to_space_occupant] = knight[:id]
+        move[:from_square] = knight[:square]
+        move[:from_square_occupant] = :vac
+        move[:to_square_occupant] = knight[:id]
       end
 
       puts "take: #{take}" if VERBOSE
