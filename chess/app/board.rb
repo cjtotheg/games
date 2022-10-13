@@ -179,39 +179,45 @@ module Chess
       }
     end
 
-    def update_board(
-      captured_piece:,
-      from_square:,
-      from_square_occupant:,
-      to_square:,
-      to_square_occupant:,
-      pgn_move:)
+    def update_board(move)
+
+      required_keys = [ 
+        :captured_piece,
+        :from_square,
+        :from_square_occupant,
+        :to_square,
+        :to_square_occupant,
+        :pgn_move,
+        :color]
+
+      required_keys.each do |key|
+        raise "move argument missing key" unless move.has_key?(key)
+      end
 
       #increase the move_count for to_square_occupant
-      @board[:pieces][to_square_occupant][:move_count] += 1
+      @board[:pieces][move[:to_square_occupant]][:move_count] += 1
       
       #set the color and @next_move
-      color = to_square_occupant.match?(/^w/) ? 'w' : 'b'
-      @next_move = color == 'w' ? 'b' : 'w'
+      @next_move = move[:color] == 'w' ? 'b' : 'w'
 
-      if captured_piece != nil
-        @board[:pieces][captured_piece][:captured] = true
+      if move[:captured_piece] != nil
+        @board[:pieces][move[:captured_piece]][:captured] = true
       end
 
       #pawn promotion
-      if to_square_occupant.match(/P/) && to_square.match(/8/) || to_square.match(/1/)
+      if move[:to_square_occupant].match(/P/) && move[:to_square].match(/8/) || move[:to_square].match(/1/)
         
         #have to remove pawn from pieces
-        @board[:pieces].delete(to_square_occupant) #pawn vanishes!
+        @board[:pieces].delete(move[:to_square_occupant]) #pawn vanishes!
 
-        to_square_occupant = get_promoted(letter: "Q", color: color)
-        create_piece(piece_id: to_square_occupant)
+        move[:to_square_occupant] = get_promoted(letter: "Q", color: move[:color])
+        create_piece(piece_id: move[:to_square_occupant])
 
       end
 
       #move the piece (set it in place!)
-      @board[:squares][from_square] = from_square_occupant
-      @board[:squares][to_square] = to_square_occupant 
+      @board[:squares][move[:from_square]] = move[:from_square_occupant]
+      @board[:squares][move[:to_square]] = move[:to_square_occupant]
 
       #===============
       #

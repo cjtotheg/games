@@ -56,23 +56,17 @@ module Chess
 
     def king_move(pgn_move:, color:)
       
-      result = King::interpret_pgn_move(board: board, pgn_move: pgn_move, color: color)
+      move = King::interpret_pgn_move(board: board, pgn_move: pgn_move, color: color)
 
-      if result[:valid] == false
-        @user_error_messages.push result[:error]
+      if move[:valid] == false
+        @user_error_messages.push move[:error]
         return false
       end
 
-      if result[:valid] == true
+      if move[:valid] == true
 
         ## do the move
-        update_board(
-          captured_piece: result[:captured_piece],
-          from_square: result[:from_square],
-          from_square_occupant: result[:from_square_occupant],
-          to_square: result[:to_square],
-          to_square_occupant: result[:to_square_occupant],
-          pgn_move: result[:pgn_move])
+        update_board(move)
 
         update_pieces
 
@@ -84,24 +78,17 @@ module Chess
 
     def knight_move(pgn_move:, color:)
       
-      result = Knight::interpret_pgn_move(board: board, pgn_move: pgn_move, color: color)
+      move = Knight::interpret_pgn_move(board: board, pgn_move: pgn_move, color: color)
       
-      if result[:valid] == false
-        @user_error_messages.push result[:error]
+      if move[:valid] == false
+        @user_error_messages.push move[:error]
         return false
       end
 
-      if result[:valid] == true
+      if move[:valid] == true
 
         ## do the move
-        update_board(
-          captured_piece: result[:captured_piece],
-          from_square: result[:from_square],
-          from_square_occupant: result[:from_square_occupant],
-          to_square: result[:to_square],
-          to_square_occupant: result[:to_square_occupant],
-          pgn_move: result[:pgn_move])
-
+        update_board(move)
         update_pieces
 
         return true
@@ -113,22 +100,16 @@ module Chess
 
     def pawn_move(pgn_move:, color:)
       
-      result = Pawn::interpret_pgn_move(board: board, pgn_move: pgn_move, color: color)
+      move = Pawn::interpret_pgn_move(board: board, pgn_move: pgn_move, color: color)
 
-      if result[:valid] == false
-        @user_error_messages.push result[:error]
+      if move[:valid] == false
+        @user_error_messages.push move[:error]
         return false
       end
 
-      if result[:valid] == true
+      if move[:valid] == true
         ## do the move
-        update_board(
-          captured_piece: result[:captured_piece],
-          from_square: result[:from_square],
-          from_square_occupant: result[:from_square_occupant],
-          to_square: result[:to_square],
-          to_square_occupant: result[:to_square_occupant],
-          pgn_move: result[:pgn_move])
+        update_board(move)
 
         update_pieces
 

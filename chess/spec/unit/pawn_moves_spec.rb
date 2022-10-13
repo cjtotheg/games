@@ -254,11 +254,27 @@ module Chess
 
     end
 
-    context 'Black is forced to clear the check' do
-      
-      it 'black moves king to :e7'
+    context 'Black is forced to clear the check.' do
 
-      it 'Verify printed board looks correct.'      
+      it 'It is black move.' do
+        expect(game.next_move).to eq('b')
+      end
+
+      it 'Black king is in check (has one threat from white pawn on f7).' do
+        expect(game.board[:pieces][:bK][:threats]).to eq([:f7])
+      end
+
+      it 'Black tries to do a different move that doesnt clear the check.' do
+        expect(game.black_move("a5")).to eq(false)
+      end
+
+      it 'It is still black move.' do
+        expect(game.next_move).to eq('b')
+      end
+
+      it 'Black moves king out of check with Ke7.' do 
+        expect(game.black_move("Ke7")).to eq(true)
+      end
 
     end
 

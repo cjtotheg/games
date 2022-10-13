@@ -113,6 +113,7 @@ module Chess
         to_square: nil,
         to_square_occupant: nil,
         pgn_move: pgn_move,
+        color: color
       }
   
       take = false
