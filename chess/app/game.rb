@@ -1,5 +1,5 @@
 module Chess
-  class Game < Move
+  class Game
   end
 end
 

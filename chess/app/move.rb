@@ -1,7 +1,7 @@
 
 module Chess
 
-  class Move < Board
+  class Move
 
     def white_move(pgn_move)
       success = do_move(pgn_move: pgn_move, color: "w")

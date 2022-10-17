@@ -1,0 +1,51 @@
+
+Classes:
+
+Game
+
+Board
+
+PGNMoveInterpreter
+  receives 
+   PGN move
+   board
+   pieces_data
+  returns 
+    move hash
+
+MoveAuthorizer
+  receives
+    board
+    pieces_data
+    move hash
+  returns
+    auth hash
+
+MoveReport
+  receives
+    board
+    pieces_data
+  returns
+    report hash
+  
+
+Game flow:
+
+game = Game.new
+  @board = Board.new
+  @pieces_data = PiecesData.new
+
+game.white_move("e4")
+  move = PGNMoveInterpreter.interpret(pgn_move, game.board, game.pieces_data)
+  if move[:valid] continue
+    auth_report = MoveAuthorizer.eval(game.board, game.pieces_data, move)
+    if auth_report valid
+      trial_board = Board.new(game.board)
+      trial_pieces_data = PiecesData.new(game.pieces_data)
+      trial_board.move(move)
+      trial_move_report = MoveReport.generate(trail_board.board,
+                                              trial_pieces_data.data)
+      if trial_move_report valid
+        #update game
+  
+

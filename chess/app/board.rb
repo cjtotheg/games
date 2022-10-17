@@ -1,7 +1,3 @@
-
-
-#Board->Move->Game
-
 module Chess
   class Board
     attr_reader :board, :next_move
