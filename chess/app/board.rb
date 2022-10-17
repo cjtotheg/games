@@ -1,150 +1,22 @@
 module Chess
   class Board
-    attr_reader :board, :next_move
+    attr_reader :board
 
     def initialize
 
-      @user_error_messages = [] #array of strings. If set, move is not made.
-
-      @next_move = 'w' #this switches when a valid move is made
-
       @board = {
-        pgn: [], #put couplets of moves in like this: ["e4","Nf6"] etc.
-        squares: {
-          a1: :wR1, b1: :wN1, c1: :wB1, d1: :wQ1, e1: :wK,  f1: :wB2, g1: :wN2, h1: :wR2,
-          a2: :wP1, b2: :wP2, c2: :wP3, d2: :wP4, e2: :wP5, f2: :wP6, g2: :wP7, h2: :wP8,
-          a3: :vac, b3: :vac, c3: :vac, d3: :vac, e3: :vac, f3: :vac, g3: :vac, h3: :vac,
-          a4: :vac, b4: :vac, c4: :vac, d4: :vac, e4: :vac, f4: :vac, g4: :vac, h4: :vac,
-          a5: :vac, b5: :vac, c5: :vac, d5: :vac, e5: :vac, f5: :vac, g5: :vac, h5: :vac,
-          a6: :vac, b6: :vac, c6: :vac, d6: :vac, e6: :vac, f6: :vac, g6: :vac, h6: :vac,
-          a7: :bP1, b7: :bP2, c7: :bP3, d7: :bP4, e7: :bP5, f7: :bP6, g7: :bP7, h7: :bP8,
-          a8: :bR1, b8: :bN1, c8: :bB1, d8: :bQ1, e8: :bK,  f8: :bB2, g8: :bN2, h8: :bR2
-        },
-        pieces: {
-          wP1: {captured: false, move_count: 0, moves: [], attacks: [], threats: [], ep_attacks: [], ep_threats: []},
-          wP2: {captured: false, move_count: 0, moves: [], attacks: [], threats: [], ep_attacks: [], ep_threats: []},
-          wP3: {captured: false, move_count: 0, moves: [], attacks: [], threats: [], ep_attacks: [], ep_threats: []},
-          wP4: {captured: false, move_count: 0, moves: [], attacks: [], threats: [], ep_attacks: [], ep_threats: []},
-          wP5: {captured: false, move_count: 0, moves: [], attacks: [], threats: [], ep_attacks: [], ep_threats: []},
-          wP6: {captured: false, move_count: 0, moves: [], attacks: [], threats: [], ep_attacks: [], ep_threats: []},
-          wP7: {captured: false, move_count: 0, moves: [], attacks: [], threats: [], ep_attacks: [], ep_threats: []},
-          wP8: {captured: false, move_count: 0, moves: [], attacks: [], threats: [], ep_attacks: [], ep_threats: []},
-          wR1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
-          wN1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
-          wB1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
-          wQ1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
-          wK:  {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
-          wB2: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
-          wN2: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
-          wR2: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
-          bP1: {captured: false, move_count: 0, moves: [], attacks: [], threats: [], ep_attacks: [], ep_threats: []},
-          bP2: {captured: false, move_count: 0, moves: [], attacks: [], threats: [], ep_attacks: [], ep_threats: []},
-          bP3: {captured: false, move_count: 0, moves: [], attacks: [], threats: [], ep_attacks: [], ep_threats: []},
-          bP4: {captured: false, move_count: 0, moves: [], attacks: [], threats: [], ep_attacks: [], ep_threats: []},
-          bP5: {captured: false, move_count: 0, moves: [], attacks: [], threats: [], ep_attacks: [], ep_threats: []},
-          bP6: {captured: false, move_count: 0, moves: [], attacks: [], threats: [], ep_attacks: [], ep_threats: []},
-          bP7: {captured: false, move_count: 0, moves: [], attacks: [], threats: [], ep_attacks: [], ep_threats: []},
-          bP8: {captured: false, move_count: 0, moves: [], attacks: [], threats: [], ep_attacks: [], ep_threats: []},
-          bR1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
-          bN1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
-          bB1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
-          bQ1: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
-          bK:  {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
-          bB2: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
-          bN2: {captured: false, move_count: 0, moves: [], attacks: [], threats: []},
-          bR2: {captured: false, move_count: 0, moves: [], attacks: [], threats: []}
-        }
+        a1: :wR1, b1: :wN1, c1: :wB1, d1: :wQ1, e1: :wK,  f1: :wB2, g1: :wN2, h1: :wR2,
+        a2: :wP1, b2: :wP2, c2: :wP3, d2: :wP4, e2: :wP5, f2: :wP6, g2: :wP7, h2: :wP8,
+        a3: :vac, b3: :vac, c3: :vac, d3: :vac, e3: :vac, f3: :vac, g3: :vac, h3: :vac,
+        a4: :vac, b4: :vac, c4: :vac, d4: :vac, e4: :vac, f4: :vac, g4: :vac, h4: :vac,
+        a5: :vac, b5: :vac, c5: :vac, d5: :vac, e5: :vac, f5: :vac, g5: :vac, h5: :vac,
+        a6: :vac, b6: :vac, c6: :vac, d6: :vac, e6: :vac, f6: :vac, g6: :vac, h6: :vac,
+        a7: :bP1, b7: :bP2, c7: :bP3, d7: :bP4, e7: :bP5, f7: :bP6, g7: :bP7, h7: :bP8,
+        a8: :bR1, b8: :bN1, c8: :bB1, d8: :bQ1, e8: :bK,  f8: :bB2, g8: :bN2, h8: :bR2
       }
 
-      update_pieces
-
     end
-   
-    def record_pgn_move(pgn_move:)
-      @board[:pgn].push(pgn_move)
-    end
-
-    def get_pgn_moves_string
-      pgn_moves_touple = []
-      pgn_string = ""
-      set = []
-      move_count = 0
-      @board[:pgn].each_with_index do |move, index|
-        
-        move_count += 1
-        
-        if move_count % 2 != 0
-          set.push move
-
-          if @board[:pgn].count == (index + 1) #one move in last set
-            set.push nil
-            pgn_moves_touple.push set
-          end
-
-        end
-
-        if move_count % 2 == 0
-          set.push move
-          pgn_moves_touple.push set
-          set = []
-        end
-
-      end
-
-      pgn_moves_touple.each_with_index do |touple, index|
-        pgn_string += "#{index + 1}.#{touple[0]} #{touple[1]} "
-      end
-
-      return pgn_string
-
-    end
-
-    def print_piece_data
-      
-      @board[:pieces].each do |piece|
-        p piece  
-      end
-
-    end
-
-    def update_pieces
-      #board[:squares] is the source of truth!!
-      #need to know what this move is so we can see if en passant is in play
-      #build the attacks, threats, and captured based on the current board
-      
-      #reset all pieces to rebuild from the board
-      @board[:pieces].each do |key, val|
-        @board[:pieces][key][:moves] = []
-        @board[:pieces][key][:attacks] = []
-        @board[:pieces][key][:threats] = []
-      end
-     
-      #update moves, attacks, and threats from the current board 
-      @board[:pieces].each do |piece, piece_data|
-        next if piece_data[:captured]
-        possible_moves = nil
-
-        case piece
-        when /P/ #Pawns
-          possible_moves = Pawn::get_possible_moves(board: @board, pawn_id: piece)
-        when /N/ #Knights
-          possible_moves = Knight::get_possible_moves(board: @board, knight_id: piece)
-        end
-        
-        if possible_moves 
-          @board[:pieces][piece][:attacks] = possible_moves[:attacks]
-          @board[:pieces][piece][:moves]   = possible_moves[:moves]
-        end
-
-        next if piece_data[:attacks].count == 0
-        piece_data[:attacks].each do |attack|
-          @board[:pieces][@board[:squares][attack]][:threats].push get_square_of_piece(piece)
-        end
-
-      end
-
-    end
-
+    
     def get_square_of_piece(piece)
       @board[:squares].each do |square, occupant| 
         return square if occupant == piece
@@ -163,16 +35,6 @@ module Chess
       end
       promoted = existing.sort.last
       return "#{color}#{letter}#{promoted.to_s.chars[2].to_i + 1}".to_sym
-    end
-
-    def create_piece(piece_id:)
-      #only for promotions Q,B,N,R - does not place it on the board!
-      @board[:pieces][piece_id] = {
-        captured: false,
-        moves: [],
-        attacks: [],
-        threats: []
-      }
     end
 
     def update_board(move)
