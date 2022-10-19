@@ -24,8 +24,32 @@ module Chess
 
     def move_wrapper(pgn_move:, color:)
       valid_move_report = valid_move?(pgn_move: pgn_move, color: color)
+      p valid_move_report
       if valid_move_report[:valid]
-        do_move(pgn_move: pgn_move, color: color)
+        move = do_move(pgn_move: pgn_move, color: color)
+        
+        #increase the move_count for to_square_occupant
+        @pieces[move[:to_square_occupant]][:move_count] += 1
+       
+        #set the color and @next_move
+        @next_move = move[:color] == 'w' ? 'b' : 'w'
+
+        if move[:captured_piece] != nil
+          @pieces[move[:captured_piece]][:captured] = true
+        end
+
+        #pawn promotion
+        if move[:to_square_occupant].match(/P/) &&
+            move[:to_square].match(/8/) || move[:to_square].match(/1/)
+
+          #have to remove pawn from pieces
+          @board[:pieces].delete(move[:to_square_occupant]) #pawn vanishes!
+
+          move[:to_square_occupant] = get_promoted(letter: "Q", color: move[:color])
+          create_piece(piece_id: move[:to_square_occupant])
+
+        end
+
         return true
       else
         puts "Invalid move:"
@@ -86,7 +110,7 @@ module Chess
     def make_move(move:, pieces:, board:)
       #give it the real board and pieces, or a trial board and pieces
       #updates board and pieces objects based on move hash
-      board.update_board(move)
+      board.update_board(move: move, board: board, pieces: pieces)
     end
 
     def post_move(move:, pieces:, board:)

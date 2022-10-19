@@ -48,7 +48,7 @@ module Chess
       return "#{color}#{letter}#{promoted.to_s.chars[2].to_i + 1}".to_sym
     end
 
-    def update_board(move)
+    def update_board(move:, board:, pieces:)
 
       required_keys = [ 
         :captured_piece,
@@ -63,30 +63,9 @@ module Chess
         raise "move argument missing key" unless move.has_key?(key)
       end
 
-      #increase the move_count for to_square_occupant
-      @board[:pieces][move[:to_square_occupant]][:move_count] += 1
-      
-      #set the color and @next_move
-      @next_move = move[:color] == 'w' ? 'b' : 'w'
-
-      if move[:captured_piece] != nil
-        @board[:pieces][move[:captured_piece]][:captured] = true
-      end
-
-      #pawn promotion
-      if move[:to_square_occupant].match(/P/) && move[:to_square].match(/8/) || move[:to_square].match(/1/)
-        
-        #have to remove pawn from pieces
-        @board[:pieces].delete(move[:to_square_occupant]) #pawn vanishes!
-
-        move[:to_square_occupant] = get_promoted(letter: "Q", color: move[:color])
-        create_piece(piece_id: move[:to_square_occupant])
-
-      end
-
       #move the piece (set it in place!)
-      @board[:squares][move[:from_square]] = move[:from_square_occupant]
-      @board[:squares][move[:to_square]] = move[:to_square_occupant]
+      @squares[move[:from_square]] = move[:from_square_occupant]
+      @squares[move[:to_square]] = move[:to_square_occupant]
 
       #===============
       #
@@ -96,43 +75,44 @@ module Chess
 
       #en passant is a special case, so we'll sweep through again since its the only move in chess
       #where the captured piece is not occupied by the attacking piece.
-      @board[:pieces].each do |piece, data|
-        if data[:captured] && @board[:squares].has_value?(piece)
-          @board[:squares][get_square_of_piece(piece)] = :vac
+      pieces.data.each do |piece, data|
+        if data[:captured] && @squares.has_value?(piece)
+          @squares[get_square_of_piece(piece)] = :vac
         end
       end
      
       #build the attacks, threats, and captured based on the current board
 
       #reset all pieces to rebuild later
-      @board[:pieces].each do |key, val|
-        @board[:pieces][key][:moves] = []
-        @board[:pieces][key][:attacks] = []
-        @board[:pieces][key][:threats] = []
+      pieces.data.each do |key, val|
+        pieces.data[key][:moves] = []
+        pieces.data[key][:attacks] = []
+        pieces.data[key][:threats] = []
         
         if key.match(/P/) #pawns
-          @board[:pieces][key][:ep_attacks] = []
-          @board[:pieces][key][:ep_threats] = []
+          pieces.data[key][:ep_attacks] = []
+          pieces.data[key][:ep_threats] = []
         end
       end
 
       #update moves, attacks, and threats
-      @board[:pieces].each do |piece, piece_data|
+      pieces.data.each do |piece, piece_data|
         next if piece_data[:captured]
 
         case piece
         when /P/
-          possible_moves = Pawn::get_possible_moves(board: @board, pawn_id: piece)
-          @board[:pieces][piece][:attacks] = possible_moves[:attacks]
-          @board[:pieces][piece][:moves] = possible_moves[:moves]
+          possible_moves = Pawn::get_possible_moves(board: board, pieces: pieces, pawn_id: piece)
+          pieces.data[piece][:attacks] = possible_moves[:attacks]
+          pieces.data[piece][:moves] = possible_moves[:moves]
         end
 
         next if piece_data[:attacks].count == 0
         piece_data[:attacks].each do |attack|
-          @board[:pieces][@board[:squares][attack]][:threats].push get_square_of_piece(piece)
+          pieces.data[@squares[attack]][:threats].push get_square_of_piece(piece)
         end
 
       end
+
     end
 
     def square_to_strings(key:, val:)

@@ -23,6 +23,21 @@ module Chess
       }
 
       #do some checks...
+      if @pieces.data[:wK][:threats].count > 0
+        data[:w_check] = true
+        if @pieces.data[:wK][:moves].count == 0
+          data[:w_mate] = true
+        end
+      end
+
+      if @pieces.data[:bK][:threats].count > 0 
+        data[:b_check] = true
+        if @pieces.data[:bK][:moves].count == 0
+          data[:b_mate] = true
+        end
+      end
+
+      data[:valid] = true
 
       return data
 
