@@ -1,6 +1,6 @@
 module Chess
 
-  class Pawn < Pieces
+  class Pawn
 
     WHITE_PAWN_MOVES = {
       a2: [:a3, :a4, :b3],
@@ -103,10 +103,10 @@ module Chess
       h7: [:h6, :h5, :g6]}
 
 
-    def self.interpret_pgn_move(board:, pgn_move:, color:)
+    def self.interpret_pgn_move(board:, pieces:, pgn_move:, color:)
       move = {
         valid: false,
-        error: nil,
+        errors: [],
         captured_piece: nil,
         from_square: nil,
         from_square_occupant: nil,
@@ -125,7 +125,7 @@ module Chess
       a_pgn = pgn_move.chars
       pawn = {:square => nil, :id => nil} 
       pawns = []
-      board[:squares].each do |square, occupant|
+      board.squares.each do |square, occupant|
         next if occupant == :vac
         if a_pgn[0].match(square.to_s.chars[0]) && occupant.match(/P/) && occupant.match(color) 
           pawns.push [square, occupant]
@@ -203,7 +203,7 @@ module Chess
 
         else #regular pawn forward move
 
-            if board[:pieces][pawn[:id]][:moves].bsearch{|square| square == pgn_move.to_sym}
+            if pieces.data[pawn[:id]][:moves].bsearch{|square| square == pgn_move.to_sym}
               move[:valid] = true
               move[:from_square] = pawn[:square]
               move[:from_square_occupant] = :vac
@@ -222,7 +222,7 @@ module Chess
 
     end
 
-    def self.get_possible_moves(board:, pawn_id:)
+    def self.get_possible_moves(board:, pieces:, pawn_id:)
 
       color = pawn_id.match(/^w/) ? 'w' : 'b'
 
@@ -232,7 +232,7 @@ module Chess
       }
 
       pawn_square = nil
-      board[:squares].each do |key, val|
+      board.squares.each do |key, val|
         if val == pawn_id
           pawn_square = key
         end
@@ -275,15 +275,15 @@ module Chess
 
             #ONE AHEAD
             #a pawn can move 1 ahead if another piece is not in front of it
-            if possible_square == one_square_ahead && board[:squares][one_square_ahead] == :vac
+            if possible_square == one_square_ahead && board.squares[one_square_ahead] == :vac
               possible_moves[:moves].push possible_square
             end
 
             #TWO AHEAD
             #a pawn can move 2 ahead if another piece is not in front of it, and it has not moved yet
             if possible_square == two_squares_ahead &&
-               board[:squares][one_square_ahead] == :vac &&
-               board[:squares][two_squares_ahead] == :vac
+               board.squares[one_square_ahead] == :vac &&
+               board.squares[two_squares_ahead] == :vac
               possible_moves[:moves].push possible_square
             end
 
@@ -292,14 +292,14 @@ module Chess
             # highest letter is a, which is "a".ord => 97
             # lowest letter is h, which is "h".ord => 104
             if possible_square == lt_diagonal_attack &&
-                board[:squares][possible_square] != :vac &&
-                board[:squares][possible_square].to_s.chars[0] != color
+                board.squares[possible_square] != :vac &&
+                board.squares[possible_square].to_s.chars[0] != color
               possible_moves[:attacks].push possible_square
             end
 
             if possible_square == rt_diagonal_attack &&
-                board[:squares][possible_square] != :vac &&
-                board[:squares][possible_square].to_s.chars[0] != color
+                board.squares[possible_square] != :vac &&
+                board.squares[possible_square].to_s.chars[0] != color
               possible_moves[:attacks].push possible_square
             end
 
@@ -322,7 +322,7 @@ module Chess
       en_passant_moves = [] #should be array of hashes like: {piece_id, threats, attacks}
       a_pgn_move = pgn_move.to_s.chars
 
-      board[:squares].each do |square, piece|
+      board.squares.each do |square, piece|
         
         a_square = square.to_s.chars
         a_piece  = piece.to_s.chars

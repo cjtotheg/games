@@ -1,6 +1,6 @@
 module Chess
 
-  class Knight < Pieces
+  class Knight
     
     KNIGHT_MOVES = {
       a1: [:b3, :c2],
@@ -69,7 +69,7 @@ module Chess
       h8: [:g6, :f7]    
     }
   
-    def self.get_possible_moves(board:, knight_id:)
+    def self.get_possible_moves(board:, pieces:, knight_id:)
       color = knight_id.match(/^w/) ? 'w' : 'b'
 
       possible_moves = {
@@ -77,13 +77,13 @@ module Chess
         moves: []
       }      
 
-      knight_square = get_square_of_piece(board: board, piece: knight_id)
+      knight_square = pieces.get_square_of_piece(board: board, piece: knight_id)
       KNIGHT_MOVES[knight_square].each do |square|
         
-        if board[:squares][square] == :vac
+        if board.squares[square] == :vac
           possible_moves[:moves].push square
         else 
-          possible_moves[:attacks].push square unless board[:squares][square].to_s.chars[0].match(color)
+          possible_moves[:attacks].push square unless board.squares[square].to_s.chars[0].match(color)
         end
 
       end 

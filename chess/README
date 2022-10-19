@@ -4,28 +4,29 @@ Classes:
 Game
 
 Board
-
-PieceData
-  receives 
-    board
+The squares and what's on them, and some useful tasks related to pieces on the board.
 
 Pieces
-  Pawn
-  Rook
-  Knight
-  Bishop
-  Queen
-  King
+The pieces data, and some useful tasks for pieces.
 
-PGNMoveInterpreter
+Pawn
+Rook
+Knight
+Bishop
+Queen
+King
+
+PGNMove
+Interprets pgn move to see if its valid, and if it can be done based on the
+current game status.
   receives 
    PGN move
    board
-   pieces_data
+   pieces
   returns 
     move hash
 
-PreMoveAuthorizer
+PreMove
   receives
     board
     pieces_data
@@ -33,12 +34,12 @@ PreMoveAuthorizer
   returns
     auth hash
 
-PostMoveReport
+PostMove
   receives
     board
     pieces_data
   returns
-    report hash
+    update hash
   
 
 Game flow:

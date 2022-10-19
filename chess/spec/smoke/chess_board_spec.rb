@@ -20,7 +20,7 @@ module Chess
       }        
 
       expected_board.each do |key, val|
-        expect(game.board[:squares][key]).to eq(val)
+        expect(game.board.squares[key]).to eq(val)
       end
 
     end

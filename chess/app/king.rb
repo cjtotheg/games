@@ -1,7 +1,7 @@
   
 module Chess
   
-  class King < Pieces
+  class King
     
     KING_MOVES = {
       a1: [:a2, :b2, :b1],

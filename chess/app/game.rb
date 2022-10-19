@@ -2,63 +2,99 @@ module Chess
 
   class Game
 
+    attr_reader :board, :pieces
+
     def initialize
       @next_move = 'w'
       @board = Board.new
-      @pieces_data = PiecesData.new(@board) 
+      @pieces = Pieces.new 
       @pgn_moves = []
       @user_error_messages = []
     end
 
     def white_move(pgn_move)
-      success = do_move(pgn_move: pgn_move, color: "w")
-      handle_errors
-      return success
+      raise "Error. It is white's move." if @next_move != 'w'
+      return move_wrapper(pgn_move: pgn_move, color: 'w')
     end
 
     def black_move(pgn_move)
-      success = do_move(pgn_move: pgn_move, color: "b")
-      handle_errors
-      return success
+      raise "Error. It's black's move." if @next_move != 'b'
+      return move_wrapper(pgn_move: pgn_move, color: 'b')
     end
 
-    def handle_errors
-      @user_error_messages.each do |message|
-        puts "ERROR: #{message}"
+    def move_wrapper(pgn_move:, color:)
+      valid_move_report = valid_move?(pgn_move: pgn_move, color: color)
+      if valid_move_report[:valid]
+        do_move(pgn_move: pgn_move, color: color)
+        return true
+      else
+        puts "Invalid move:"
+        valid_move_report[:errors].each do |error|
+          puts error
+        end
+        return false
+      end    
+    end
+
+    def valid_move?(pgn_move:, color:)
+      
+      #all of the following have to pass (virtually)
+      #pre_move
+      #make_move
+      #post_move
+
+      trial_board = Board.new(@board.squares)
+
+      trial_pieces = Pieces.new(@pieces.data)
+
+      move = pre_move(pgn_move: pgn_move, color: color, board: trial_board, pieces: trial_pieces)
+      make_move(move: move, pieces: trial_pieces, board: trial_board)
+      post_move_report = post_move(move: move, pieces: trial_pieces, board: trial_board)
+
+      if VERBOSE
+        puts "----"
+        puts "valid_move?(pgn_move: #{pgn_move}, color: '#{color}') Post move report:"
+        p post_move_report
+        puts "----"
       end
-      @user_error_messages = []
+
+      return post_move_report
+
     end
 
     def do_move(pgn_move:, color:)
 
-      valid = false
+      move = pre_move(pgn_move: pgn_move, color: color, board: @board, pieces: @pieces)
+      make_move(move: move, pieces: @pieces, board: @board)
+      post_move_report = post_move(move: move, pieces: @pieces, board: @board)
 
-      if @next_move != color
-        @user_error_messages.push "Move rejected because it is #{color == 'w' ? 'white' : 'black'} move."
-        return false #hard stop here if not this color's move.
+      if VERBOSE
+        puts "----"
+        puts "do_move(pgn_move: #{pgn_move}, color: '#{color}') Post move report:"
+        p post_move_report
+        puts "----"
       end
 
-      case pgn_move
-      when /^[abcdefgh]/
-        valid = pawn_move(pgn_move: pgn_move, color: color)
-      when /^N/
-        valid = knight_move(pgn_move: pgn_move, color: color)
-      when /^K/
-        valid = king_move(pgn_move: pgn_move, color: color)
-      end
+      return post_move_report
 
-      if valid
-        @board[:pgn].push pgn_move
-      else
-        @user_error_messages.push "Move #{pgn_move} not recognized."
-        return false
-      end
+    end
 
-      if VERBOSE || PRINT_BOARD_EVERY_MOVE
-        print_board
-      end
+    def pre_move(pgn_move:, color:, board:, pieces:)
+      PGNMove.interpret(color: color, pgn_move: pgn_move, board: board, pieces: pieces)
+    end
 
-      return valid
+    def make_move(move:, pieces:, board:)
+      #give it the real board and pieces, or a trial board and pieces
+      #updates board and pieces objects based on move hash
+      board.update_board(move)
+    end
+
+    def post_move(move:, pieces:, board:)
+      #give is the real board and pieces, or a trial board and pieces
+      #returns post move report hash - this will be the final report of whether
+      #move is valid, and what happened, (check, en passant, check mate)
+      pmr = PostMove.new(move: move, pieces: pieces, board: board)
+      pmr.report
     end
 
     def king_move(pgn_move:, color:)
@@ -66,7 +102,6 @@ module Chess
       move = King::interpret_pgn_move(board: board, pgn_move: pgn_move, color: color)
 
       if move[:valid] == false
-        @user_error_messages.push move[:error]
         return false
       end
 
@@ -88,7 +123,6 @@ module Chess
       move = Knight::interpret_pgn_move(board: board, pgn_move: pgn_move, color: color)
 
       if move[:valid] == false
-        @user_error_messages.push move[:error]
         return false
       end
 
@@ -105,41 +139,6 @@ module Chess
 
     end
 
-    def pawn_move(pgn_move:, color:)
-
-      move = Pawn::interpret_pgn_move(board: board, pgn_move: pgn_move, color: color)
-
-      if move[:valid] == false
-        @user_error_messages.push move[:error]
-        return false
-      end
-
-      if move[:valid] == true
-        ## do the move
-        update_board(move)
-
-        update_pieces
-
-        #En passant?? Update @board if so..
-        a_en_passants = Pawn::get_en_passant_moves(board: board, pgn_move: pgn_move, color: color)
-
-        a_en_passants.each do |en_passant|
-          if en_passant[:attacks].count > 0
-            @board[:pieces][en_passant[:piece_id]][:ep_attacks].concat en_passant[:attacks]
-          end
-          if en_passant[:threats].count > 0
-            @board[:pieces][en_passant[:piece_id]][:ep_threats].concat en_passant[:threats]
-          end
-        end
-
-        return true
-
-      end
-
-      raise "Something went wrong!"
-
-    end
-
     def record_pgn_move(pgn_move:)
       @board[:pgn].push(pgn_move)
     end    
@@ -149,14 +148,14 @@ module Chess
       pgn_string = ""
       set = []
       move_count = 0
-      @board[:pgn].each_with_index do |move, index|
+      @pgn_moves.each_with_index do |move, index|
 
         move_count += 1
 
         if move_count % 2 != 0
           set.push move
 
-          if @board[:pgn].count == (index + 1) #one move in last set
+          if @pgn_moves.count == (index + 1) #one move in last set
             set.push nil
             pgn_moves_touple.push set
           end
