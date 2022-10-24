@@ -104,6 +104,9 @@ module Chess
 
 
     def self.interpret_pgn_move(board:, pieces:, pgn_move:, color:)
+
+      puts "=== Pawn.interpret_pgn_move"
+
       move = {
         valid: false,
         errors: [],
@@ -115,7 +118,10 @@ module Chess
         pgn_move: pgn_move,
         color: color
       }
-  
+
+      puts "move:"
+      p move
+
       take = false
       if pgn_move.match(/x/)
         take = true
@@ -203,20 +209,31 @@ module Chess
 
         else #regular pawn forward move
 
-            if pieces.data[pawn[:id]][:moves].bsearch{|square| square == pgn_move.to_sym}
-              move[:valid] = true
-              move[:from_square] = pawn[:square]
-              move[:from_square_occupant] = :vac
-              move[:to_square] = pgn_move.to_sym
-              move[:to_square_occupant] = pawn[:id]
-            else
-              move[:valid] = false
-              move[:error] = "Invalid pawn move."
-            end
+  
+          puts "======================="
+          puts "Pawn.rb - regular forward move:"
+          p pawn
+          puts "======================="
+
+          
+          if pieces.data[pawn[:id]][:moves].bsearch{|square| square == pgn_move.to_sym}
+            move[:valid] = true
+            move[:from_square] = pawn[:square]
+            move[:from_square_occupant] = :vac
+            move[:to_square] = pgn_move.to_sym
+            move[:to_square_occupant] = pawn[:id]
+          else
+            move[:valid] = false
+            move[:error] = "Invalid pawn move. Pawn.rb regular pawn forward move."
+          end
 
         end
 
       end
+
+
+      puts "move:"
+      p move
 
       return move
 
@@ -265,7 +282,7 @@ module Chess
       end
 
 
-      puts "pawn_id: #{pawn_id} pawn_square: #{pawn_square} color: #{color} one_square_ahead: #{one_square_ahead} two_squares_ahead: #{two_squares_ahead} lt_diagonal_attack: #{lt_diagonal_attack} rt_diagonal_attack: #{rt_diagonal_attack}" if VERBOSE
+      #puts "pawn_id: #{pawn_id} pawn_square: #{pawn_square} color: #{color} one_square_ahead: #{one_square_ahead} two_squares_ahead: #{two_squares_ahead} lt_diagonal_attack: #{lt_diagonal_attack} rt_diagonal_attack: #{rt_diagonal_attack}" if VERBOSE
 
       pawn_moves = color == 'w' ? WHITE_PAWN_MOVES : BLACK_PAWN_MOVES
       pawn_moves.each do |square,moves|
@@ -302,8 +319,6 @@ module Chess
                 board.squares[possible_square].to_s.chars[0] != color
               possible_moves[:attacks].push possible_square
             end
-
-
 
           end
 

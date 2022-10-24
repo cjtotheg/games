@@ -2,12 +2,12 @@ module Chess
 
   class Game
 
-    attr_reader :board, :pieces
-
     def initialize
+      puts "=== Game.new"
       @next_move = 'w'
       @board = Board.new
       @pieces = Pieces.new 
+      @pieces.update(@board)
       @pgn_moves = []
       @user_error_messages = []
     end
@@ -23,13 +23,20 @@ module Chess
     end
 
     def move_wrapper(pgn_move:, color:)
+      puts "=== Game.move_wrapper(pgn_move: #{pgn_move}, color: #{color}"
       valid_move_report = valid_move?(pgn_move: pgn_move, color: color)
-      p valid_move_report
       if valid_move_report[:valid]
-        move = do_move(pgn_move: pgn_move, color: color)
+        move = do_move(pgn_move: pgn_move, color: color, board: @board, pieces: @pieces)
         
+        puts "===========AFTER do_move==============="
+        move.each do |k,v|
+          puts "#{k}: #{v}"
+        end
+        puts "======================================="
+    
+
         #increase the move_count for to_square_occupant
-        @pieces[move[:to_square_occupant]][:move_count] += 1
+        @pieces.data[move[:to_square_occupant]][:move_count] += 1
        
         #set the color and @next_move
         @next_move = move[:color] == 'w' ? 'b' : 'w'
@@ -67,49 +74,77 @@ module Chess
       #make_move
       #post_move
 
-      trial_board = Board.new(@board.squares)
+      puts "=== Game.valid_move?(pgn_move: #{pgn_move}, color: #{color}"
 
-      trial_pieces = Pieces.new(@pieces.data)
+      cloned_board = @board.dup
+      cloned_pieces = @pieces.dup
 
-      move = pre_move(pgn_move: pgn_move, color: color, board: trial_board, pieces: trial_pieces)
-      make_move(move: move, pieces: trial_pieces, board: trial_board)
-      post_move_report = post_move(move: move, pieces: trial_pieces, board: trial_board)
+      puts "- BEFORE -"
+      puts "@board.squares[:e2] = #{@board.squares[:e2]}"
+      puts "@board.squares[:e4] = #{@board.squares[:e4]}"
+      puts "cloned_board.squares[:e2] = #{cloned_board.squares[:e2]}"
+      puts "cloned_board.squares[:e4] = #{cloned_board.squares[:e4]}"      
 
-      if VERBOSE
-        puts "----"
-        puts "valid_move?(pgn_move: #{pgn_move}, color: '#{color}') Post move report:"
-        p post_move_report
-        puts "----"
-      end
+      move = pre_move(pgn_move: pgn_move, color: color, board: cloned_board, pieces: cloned_pieces)
+
+      puts "- AFTER pre_move -"
+      puts "@board.squares[:e2] = #{@board.squares[:e2]}"
+      puts "@board.squares[:e4] = #{@board.squares[:e4]}"
+      puts "cloned_board.squares[:e2] = #{cloned_board.squares[:e2]}"
+      puts "cloned_board.squares[:e4] = #{cloned_board.squares[:e4]}"
+
+      make_move(move: move, pieces: cloned_pieces, board: cloned_board)
+
+      puts "- AFTER make_move -"
+      puts "@board.squares[:e2] = #{@board.squares[:e2]}"
+      puts "@board.squares[:e4] = #{@board.squares[:e4]}"
+      puts "cloned_board.squares[:e2] = #{cloned_board.squares[:e2]}"
+      puts "cloned_board.squares[:e4] = #{cloned_board.squares[:e4]}"
+
+      post_move_report = post_move(move: move, pieces: cloned_pieces, board: cloned_board)
+
+      puts "- AFTER post_move -"
+      puts "@board.squares[:e2] = #{@board.squares[:e2]}"
+      puts "@board.squares[:e4] = #{@board.squares[:e4]}"
+      puts "cloned_board.squares[:e2] = #{cloned_board.squares[:e2]}"
+      puts "cloned_board.squares[:e4] = #{cloned_board.squares[:e4]}"
+
 
       return post_move_report
 
     end
 
-    def do_move(pgn_move:, color:)
+    def do_move(pgn_move:, color:, board:, pieces:)
 
-      move = pre_move(pgn_move: pgn_move, color: color, board: @board, pieces: @pieces)
-      make_move(move: move, pieces: @pieces, board: @board)
-      post_move_report = post_move(move: move, pieces: @pieces, board: @board)
+      puts "============ do_move ========"
+      puts "@board.squares[:e2] = #{@board.squares[:e2]}"
+      puts "@board.squares[:e4] = #{@board.squares[:e4]}"
+      puts "board.squares[:e2] = #{board.squares[:e2]}"
+      puts "board.squares[:e4] = #{board.squares[:e4]}"
 
-      if VERBOSE
-        puts "----"
-        puts "do_move(pgn_move: #{pgn_move}, color: '#{color}') Post move report:"
-        p post_move_report
-        puts "----"
+
+      move = PGNMove.interpret(color: color, pgn_move: pgn_move, board: board, pieces: pieces)
+      move.each do |k,v|
+        puts "#{k}: #{v}"
       end
+      puts "============================="
 
-      return post_move_report
+      raise "foobar"
 
     end
 
     def pre_move(pgn_move:, color:, board:, pieces:)
-      PGNMove.interpret(color: color, pgn_move: pgn_move, board: board, pieces: pieces)
+      puts "=== Game.pre_move(pgn_move: #{pgn_move}, color: #{color}, board: below, pieces: below)"
+
+      pm = PreMove.new(color: color, pgn_move: pgn_move, board: board, pieces: pieces)
+      pm.report
     end
 
     def make_move(move:, pieces:, board:)
       #give it the real board and pieces, or a trial board and pieces
       #updates board and pieces objects based on move hash
+      puts "=== Game.make_move(move: below, pieces: below, board: below)"
+
       board.update_board(move: move, board: board, pieces: pieces)
     end
 
@@ -164,7 +199,7 @@ module Chess
     end
 
     def record_pgn_move(pgn_move:)
-      @board[:pgn].push(pgn_move)
+      @pgn_moves.push(pgn_move)
     end    
 
     def get_pgn_moves_string

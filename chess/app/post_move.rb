@@ -12,6 +12,8 @@ module Chess
 
     def report
 
+      puts "=== PostMove.report"
+
       data = {
         valid: false,
         errors: [],
