@@ -1,4 +1,4 @@
-module Chess
+#module Chess
 
   class Knight
     
@@ -217,5 +217,5 @@ module Chess
 
   end
 
-end
+#end
 

@@ -102,9 +102,9 @@ module Chess
           move[:error] += "Invalid king move. PGN length is more than 4."
         end
   
-        puts "============= KING ==============" if VERBOSE
-        puts "pgn: #{pgn_move}" if VERBOSE
-        puts "color: #{color}" if VERBOSE
+        LOG.debug "============= KING ==============" if VERBOSE
+        LOG.debug "pgn: #{pgn_move}" if VERBOSE
+        LOG.debug "color: #{color}" if VERBOSE
         p move if VERBOSE
         KING_MOVES.each do |on_square, moves|
           if on_square == move[:from_square] 
@@ -163,12 +163,12 @@ module Chess
           move[:valid] = true
         end
   
-        puts "take: #{take}" if VERBOSE
-        puts "move:" if VERBOSE
+        LOG.debug "take: #{take}" if VERBOSE
+        LOG.debug "move:" if VERBOSE
         move.each do |k,v|
-          puts "#{k}: #{v}" if VERBOSE
+          LOG.debug "#{k}: #{v}" if VERBOSE
         end
-        puts "====================================" if VERBOSE
+        LOG.debug "====================================" if VERBOSE
   
         return move
   

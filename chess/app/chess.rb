@@ -12,5 +12,3 @@ require_relative 'rook.rb'
 require_relative 'queen.rb'
 require_relative 'king.rb'
 
-module Chess
-end

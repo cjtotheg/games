@@ -1,71 +1,67 @@
-module Chess
+class PGNMove
 
-  class PGNMove
+  def self.interpret(color:, pgn_move:, board:, pieces:)
+    
+    #move hash is created here
+    move = {
+      valid: false,
+      errors: [],
+      captured_piece: nil,
+      from_square: nil,
+      from_square_occupant: nil,
+      to_square: nil,
+      to_square_occupant: nil,
+      pgn_move: pgn_move,
+      color: color
+    }      
 
-    def self.interpret(color:, pgn_move:, board:, pieces:)
-      
-      #move hash is created here
-      move = {
-        valid: false,
-        errors: [],
-        captured_piece: nil,
-        from_square: nil,
-        from_square_occupant: nil,
-        to_square: nil,
-        to_square_occupant: nil,
-        pgn_move: pgn_move,
-        color: color
-      }      
-
-      case pgn_move
-      when /^[abcdefgh]/
-        move.merge!(Pawn::interpret_pgn_move(board: board, pieces: pieces, pgn_move: pgn_move, color: color))
-      when /^N/
-        raise "Knight moves not implemented yet"
-      when /^K/
-        raise "King moves not implemented yet"
-      else
-        raise "PGN Move not recognized."
-      end
-
-      return move
-
+    case pgn_move
+    when /^[abcdefgh]/
+      move.merge!(Pawn::interpret_pgn_move(board: board, pieces: pieces, pgn_move: pgn_move, color: color))
+    when /^N/
+      raise "Knight moves not implemented yet"
+    when /^K/
+      raise "King moves not implemented yet"
+    else
+      raise "PGN Move not recognized."
     end
 
-    def foo_pawn_move(pgn_move:, color:)
+    return move
 
-      move = Pawn::interpret_pgn_move(board: board, pieces: pieces, pgn_move: pgn_move, color: color)
+  end
 
-      if move[:valid] == false
-        @user_error_messages.push move[:error]
-        return false
-      end
+  def foo_pawn_move(pgn_move:, color:)
 
-      if move[:valid] == true
-        ## do the move
-        update_board(move)
+    move = Pawn::interpret_pgn_move(board: board, pieces: pieces, pgn_move: pgn_move, color: color)
 
-        update_pieces
+    if move[:valid] == false
+      @user_error_messages.push move[:error]
+      return false
+    end
 
-        #En passant?? Update @board if so..
-        a_en_passants = Pawn::get_en_passant_moves(board: board, pgn_move: pgn_move, color: color)
+    if move[:valid] == true
+      ## do the move
+      update_board(move)
 
-        a_en_passants.each do |en_passant|
-          if en_passant[:attacks].count > 0
-            @board[:pieces][en_passant[:piece_id]][:ep_attacks].concat en_passant[:attacks]
-          end
-          if en_passant[:threats].count > 0
-            @board[:pieces][en_passant[:piece_id]][:ep_threats].concat en_passant[:threats]
-          end
+      update_pieces
+
+      #En passant?? Update @board if so..
+      a_en_passants = Pawn::get_en_passant_moves(board: board, pgn_move: pgn_move, color: color)
+
+      a_en_passants.each do |en_passant|
+        if en_passant[:attacks].count > 0
+          @board[:pieces][en_passant[:piece_id]][:ep_attacks].concat en_passant[:attacks]
         end
-
-        return true
-
+        if en_passant[:threats].count > 0
+          @board[:pieces][en_passant[:piece_id]][:ep_threats].concat en_passant[:threats]
+        end
       end
 
-      raise "Something went wrong!"
+      return true
 
     end
+
+    raise "Something went wrong!"
 
   end
 

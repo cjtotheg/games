@@ -2,9 +2,10 @@
 require_relative '../../app/chess.rb'
 
 module Chess
+
   RSpec.describe 'The board' do 
     
-    let(:game) { Game.new }  
+    let(:board) { Board.new }  
 
     it 'has all the pieces where they should be' do
       
@@ -17,10 +18,10 @@ module Chess
         a6: :vac, b6: :vac, c6: :vac, d6: :vac, e6: :vac, f6: :vac, g6: :vac, h6: :vac,
         a7: :bP1, b7: :bP2, c7: :bP3, d7: :bP4, e7: :bP5, f7: :bP6, g7: :bP7, h7: :bP8,
         a8: :bR1, b8: :bN1, c8: :bB1, d8: :bQ1, e8: :bK,  f8: :bB2, g8: :bN2, h8: :bR2
-      }        
+      }
 
       expected_board.each do |key, val|
-        expect(game.board.squares[key]).to eq(val)
+        expect(board.squares[key]).to eq(val)
       end
 
     end

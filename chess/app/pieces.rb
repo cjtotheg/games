@@ -1,4 +1,4 @@
-module Chess
+#module Chess
 
   class Pieces
     
@@ -6,7 +6,7 @@ module Chess
 
     def initialize
 
-      puts "=== Pieces.new"
+      LOG.debug "=== Pieces.new"
 
       @data = {
         wP1: {captured: false, move_count: 0, moves: [], attacks: [], threats: [], ep_attacks: [], ep_threats: []},
@@ -74,7 +74,7 @@ module Chess
     def print_piece_data
 
       @data.each do |piece|
-        p piece
+        LOG.debug piece
       end
 
     end
@@ -92,7 +92,7 @@ module Chess
    def update(board)
 
 
-     puts "=== Pieces.update(board)"
+     LOG.debug "=== Pieces.update(board)"
 
      #board is the source of truth!!
      #need to know what this move is so we can see if en passant is in play
@@ -134,4 +134,4 @@ module Chess
 
   end
 
-end
+#end

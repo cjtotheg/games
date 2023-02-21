@@ -1,9 +1,9 @@
-module Chess
+#module Chess
 
   class Game
 
     def initialize
-      puts "=== Game.new"
+      LOG.debug "*************** === Game.new"
       @next_move = 'w'
       @board = Board.new
       @pieces = Pieces.new 
@@ -23,16 +23,16 @@ module Chess
     end
 
     def move_wrapper(pgn_move:, color:)
-      puts "=== Game.move_wrapper(pgn_move: #{pgn_move}, color: #{color}"
+      LOG.debug "=== Game.move_wrapper(pgn_move: #{pgn_move}, color: #{color}"
       valid_move_report = valid_move?(pgn_move: pgn_move, color: color)
       if valid_move_report[:valid]
         move = do_move(pgn_move: pgn_move, color: color, board: @board, pieces: @pieces)
         
-        puts "===========AFTER do_move==============="
+        LOG.debug "===========AFTER do_move==============="
         move.each do |k,v|
-          puts "#{k}: #{v}"
+          LOG.debug "#{k}: #{v}"
         end
-        puts "======================================="
+        LOG.debug "======================================="
     
 
         #increase the move_count for to_square_occupant
@@ -59,9 +59,9 @@ module Chess
 
         return true
       else
-        puts "Invalid move:"
+        LOG.error "Invalid move:"
         valid_move_report[:errors].each do |error|
-          puts error
+          LOG.error error
         end
         return false
       end    
@@ -74,40 +74,40 @@ module Chess
       #make_move
       #post_move
 
-      puts "=== Game.valid_move?(pgn_move: #{pgn_move}, color: #{color}"
+      LOG.debug "=== Game.valid_move?(pgn_move: #{pgn_move}, color: #{color}"
 
       cloned_board = @board.dup
       cloned_pieces = @pieces.dup
 
-      puts "- BEFORE -"
-      puts "@board.squares[:e2] = #{@board.squares[:e2]}"
-      puts "@board.squares[:e4] = #{@board.squares[:e4]}"
-      puts "cloned_board.squares[:e2] = #{cloned_board.squares[:e2]}"
-      puts "cloned_board.squares[:e4] = #{cloned_board.squares[:e4]}"      
+      LOG.debug "- BEFORE -"
+      LOG.debug "@board.squares[:e2] = #{@board.squares[:e2]}"
+      LOG.debug "@board.squares[:e4] = #{@board.squares[:e4]}"
+      LOG.debug "cloned_board.squares[:e2] = #{cloned_board.squares[:e2]}"
+      LOG.debug "cloned_board.squares[:e4] = #{cloned_board.squares[:e4]}"      
 
       move = pre_move(pgn_move: pgn_move, color: color, board: cloned_board, pieces: cloned_pieces)
 
-      puts "- AFTER pre_move -"
-      puts "@board.squares[:e2] = #{@board.squares[:e2]}"
-      puts "@board.squares[:e4] = #{@board.squares[:e4]}"
-      puts "cloned_board.squares[:e2] = #{cloned_board.squares[:e2]}"
-      puts "cloned_board.squares[:e4] = #{cloned_board.squares[:e4]}"
+      LOG.debug "- AFTER pre_move -"
+      LOG.debug "@board.squares[:e2] = #{@board.squares[:e2]}"
+      LOG.debug "@board.squares[:e4] = #{@board.squares[:e4]}"
+      LOG.debug "cloned_board.squares[:e2] = #{cloned_board.squares[:e2]}"
+      LOG.debug "cloned_board.squares[:e4] = #{cloned_board.squares[:e4]}"
 
       make_move(move: move, pieces: cloned_pieces, board: cloned_board)
 
-      puts "- AFTER make_move -"
-      puts "@board.squares[:e2] = #{@board.squares[:e2]}"
-      puts "@board.squares[:e4] = #{@board.squares[:e4]}"
-      puts "cloned_board.squares[:e2] = #{cloned_board.squares[:e2]}"
-      puts "cloned_board.squares[:e4] = #{cloned_board.squares[:e4]}"
+      LOG.debug "- AFTER make_move -"
+      LOG.debug "@board.squares[:e2] = #{@board.squares[:e2]}"
+      LOG.debug "@board.squares[:e4] = #{@board.squares[:e4]}"
+      LOG.debug "cloned_board.squares[:e2] = #{cloned_board.squares[:e2]}"
+      LOG.debug "cloned_board.squares[:e4] = #{cloned_board.squares[:e4]}"
 
       post_move_report = post_move(move: move, pieces: cloned_pieces, board: cloned_board)
 
-      puts "- AFTER post_move -"
-      puts "@board.squares[:e2] = #{@board.squares[:e2]}"
-      puts "@board.squares[:e4] = #{@board.squares[:e4]}"
-      puts "cloned_board.squares[:e2] = #{cloned_board.squares[:e2]}"
-      puts "cloned_board.squares[:e4] = #{cloned_board.squares[:e4]}"
+      LOG.debug "- AFTER post_move -"
+      LOG.debug "@board.squares[:e2] = #{@board.squares[:e2]}"
+      LOG.debug "@board.squares[:e4] = #{@board.squares[:e4]}"
+      LOG.debug "cloned_board.squares[:e2] = #{cloned_board.squares[:e2]}"
+      LOG.debug "cloned_board.squares[:e4] = #{cloned_board.squares[:e4]}"
 
 
       return post_move_report
@@ -116,25 +116,23 @@ module Chess
 
     def do_move(pgn_move:, color:, board:, pieces:)
 
-      puts "============ do_move ========"
-      puts "@board.squares[:e2] = #{@board.squares[:e2]}"
-      puts "@board.squares[:e4] = #{@board.squares[:e4]}"
-      puts "board.squares[:e2] = #{board.squares[:e2]}"
-      puts "board.squares[:e4] = #{board.squares[:e4]}"
+      LOG.debug "============ do_move ========"
+      LOG.debug "@board.squares[:e2] = #{@board.squares[:e2]}"
+      LOG.debug "@board.squares[:e4] = #{@board.squares[:e4]}"
+      LOG.debug "board.squares[:e2] = #{board.squares[:e2]}"
+      LOG.debug "board.squares[:e4] = #{board.squares[:e4]}"
 
 
       move = PGNMove.interpret(color: color, pgn_move: pgn_move, board: board, pieces: pieces)
       move.each do |k,v|
-        puts "#{k}: #{v}"
+        LOG.debug "#{k}: #{v}"
       end
-      puts "============================="
-
-      raise "foobar"
+      LOG.debug "============================="
 
     end
 
     def pre_move(pgn_move:, color:, board:, pieces:)
-      puts "=== Game.pre_move(pgn_move: #{pgn_move}, color: #{color}, board: below, pieces: below)"
+      LOG.debug "=== Game.pre_move(pgn_move: #{pgn_move}, color: #{color}, board: below, pieces: below)"
 
       pm = PreMove.new(color: color, pgn_move: pgn_move, board: board, pieces: pieces)
       pm.report
@@ -143,7 +141,7 @@ module Chess
     def make_move(move:, pieces:, board:)
       #give it the real board and pieces, or a trial board and pieces
       #updates board and pieces objects based on move hash
-      puts "=== Game.make_move(move: below, pieces: below, board: below)"
+      LOG.debug "=== Game.make_move(move: below, pieces: below, board: below)"
 
       board.update_board(move: move, board: board, pieces: pieces)
     end
@@ -239,4 +237,4 @@ module Chess
 
   end
 
-end
+#end

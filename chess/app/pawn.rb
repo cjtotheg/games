@@ -1,4 +1,4 @@
-module Chess
+#module Chess
 
   class Pawn
 
@@ -105,7 +105,7 @@ module Chess
 
     def self.interpret_pgn_move(board:, pieces:, pgn_move:, color:)
 
-      puts "=== Pawn.interpret_pgn_move"
+      LOG.debug "=== Pawn.interpret_pgn_move"
 
       move = {
         valid: false,
@@ -119,8 +119,8 @@ module Chess
         color: color
       }
 
-      puts "move:"
-      p move
+      LOG.debug "move:"
+      LOG.debug move
 
       take = false
       if pgn_move.match(/x/)
@@ -210,10 +210,10 @@ module Chess
         else #regular pawn forward move
 
   
-          puts "======================="
-          puts "Pawn.rb - regular forward move:"
-          p pawn
-          puts "======================="
+          LOG.debug "======================="
+          LOG.debug "Pawn.rb - regular forward move:"
+          LOG.debug pawn
+          LOG.debug "======================="
 
           
           if pieces.data[pawn[:id]][:moves].bsearch{|square| square == pgn_move.to_sym}
@@ -232,8 +232,8 @@ module Chess
       end
 
 
-      puts "move:"
-      p move
+      LOG.debug "move:"
+      LOG.debug move
 
       return move
 
@@ -282,7 +282,7 @@ module Chess
       end
 
 
-      #puts "pawn_id: #{pawn_id} pawn_square: #{pawn_square} color: #{color} one_square_ahead: #{one_square_ahead} two_squares_ahead: #{two_squares_ahead} lt_diagonal_attack: #{lt_diagonal_attack} rt_diagonal_attack: #{rt_diagonal_attack}" if VERBOSE
+      #LOG.debug "pawn_id: #{pawn_id} pawn_square: #{pawn_square} color: #{color} one_square_ahead: #{one_square_ahead} two_squares_ahead: #{two_squares_ahead} lt_diagonal_attack: #{lt_diagonal_attack} rt_diagonal_attack: #{rt_diagonal_attack}" if VERBOSE
 
       pawn_moves = color == 'w' ? WHITE_PAWN_MOVES : BLACK_PAWN_MOVES
       pawn_moves.each do |square,moves|
@@ -351,10 +351,10 @@ module Chess
                         
             #possible for this pawn if black pawn on rank 5 next to this pawn with one move, who just moved! lol
             if VERBOSE
-              puts "EN PASSANT POSSIBLE"
-              puts "this move: #{color} #{pgn_move}"
-              puts "#{piece} on #{square} can attack #{pgn_move} en passant by moving to #{a_pgn_move[0]}#{a_square[1].to_i + 1} "
-              puts "#{pawn_that_moved[:piece_id]} on #{square} has a threat from #{piece}"
+              LOG.debug "EN PASSANT POSSIBLE"
+              LOG.debug "this move: #{color} #{pgn_move}"
+              LOG.debug "#{piece} on #{square} can attack #{pgn_move} en passant by moving to #{a_pgn_move[0]}#{a_square[1].to_i + 1} "
+              LOG.debug "#{pawn_that_moved[:piece_id]} on #{square} has a threat from #{piece}"
             end
 
             #attacks
@@ -386,4 +386,4 @@ module Chess
 
   end
   
-end
+#end

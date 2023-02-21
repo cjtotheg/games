@@ -1,24 +1,22 @@
-module Chess
 
-  class PreMove
-    
-    def initialize(color:, pgn_move:, board:, pieces:)
 
-      puts "=== PreMove.new(color:, pgn_move:, board:, pieces:)"
+class PreMove
+  
+  def initialize(color:, pgn_move:, board:, pieces:)
 
-      @color    = color
-      @pgn_move = pgn_move
-      @pre_move_board    = board
-      @pre_move_pieces   = pieces
-    end
+    LOG.debug  "=== PreMove.new(color: #{color}, pgn_move: #{pgn_move}, board: #{board}, pieces: #{pieces})"
 
-    def report
+    @color            = color
+    @pgn_move         = pgn_move
+    @pre_move_board   = board
+    @pre_move_pieces  = pieces
+  end
 
-      response = PGNMove.interpret(color: @color, pgn_move: @pgn_move, board: @pre_move_board, pieces: @pre_move_pieces)
+  def report
 
-      return response
-    end
+    response = PGNMove.interpret(color: @color, pgn_move: @pgn_move, board: @pre_move_board, pieces: @pre_move_pieces)
 
+    return response
   end
 
 end

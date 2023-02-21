@@ -3,4 +3,10 @@
 ###
 VERBOSE = true #this will print everything
 PRINT_BOARD_EVERY_MOVE = true
-PRINT_PIECES_EVERY_MOVE = false
+PRINT_PIECES_EVERY_MOVE = true
+
+###
+# Log
+require 'logger'
+LOG = Logger.new('chess.log')
+LOG.level = :debug
