@@ -2,38 +2,59 @@
 
   class Game
 
+    attr_reader :board, :pieces, :pgn_moves, :next_move, :user_error_messages
+
     def initialize
-      LOG.debug "*************** === Game.new"
+      LOG.info "*************** === Game.new"
       @next_move = 'w'
       @board = Board.new
       @pieces = Pieces.new 
       @pieces.update(@board)
       @pgn_moves = []
       @user_error_messages = []
+
     end
 
     def white_move(pgn_move)
+      LOG.info "white moves #{pgn_move}"
       raise "Error. It is white's move." if @next_move != 'w'
-      return move_wrapper(pgn_move: pgn_move, color: 'w')
+      return mover(pgn_move: pgn_move, color: 'w')
     end
 
     def black_move(pgn_move)
+      LOG.info "black moves #{pgn_move}"
       raise "Error. It's black's move." if @next_move != 'b'
-      return move_wrapper(pgn_move: pgn_move, color: 'b')
+      return mover(pgn_move: pgn_move, color: 'b')
     end
 
-    def move_wrapper(pgn_move:, color:)
-      LOG.debug "=== Game.move_wrapper(pgn_move: #{pgn_move}, color: #{color}"
-      valid_move_report = valid_move?(pgn_move: pgn_move, color: color)
-      if valid_move_report[:valid]
-        move = do_move(pgn_move: pgn_move, color: color, board: @board, pieces: @pieces)
-        
-        LOG.debug "===========AFTER do_move==============="
-        move.each do |k,v|
-          LOG.debug "#{k}: #{v}"
+    def mover(pgn_move:, color:)
+      #this is the main method for making a move
+      #it attempts to make the move and returns true or false
+      #if the move is valid, it updates the board and pieces
+      #if the move is invalid, it returns false and sets @user_error_messages
+      LOG.debug "=== Game.mover(pgn_move: #{pgn_move}, color: #{color})"
+
+      move = PgnMove.interpret(color: color, pgn_move: pgn_move, board: @board, pieces: @pieces)
+      #@board.print_board
+      #@pieces.print_piece_data #for deep debugging
+
+      #check move, if invalid, return false
+      if move[:valid] == false
+      
+        @user_error_messages.push move[:error]
+        LOG.error "move[:error]: #{move[:error]}"
+      
+      else
+
+        #if take, set piece as captured
+        if move[:captured_piece] != nil
+          LOG.debug "captured piece: #{move[:captured_piece]}"
+          @pieces.data[move[:captured_piece]][:captured] = true
         end
-        LOG.debug "======================================="
-    
+
+        #do the move
+        @board.update_board(move: move, board: @board, pieces: @pieces)
+        @pieces.update(@board)
 
         #increase the move_count for to_square_occupant
         @pieces.data[move[:to_square_occupant]][:move_count] += 1
@@ -41,9 +62,10 @@
         #set the color and @next_move
         @next_move = move[:color] == 'w' ? 'b' : 'w'
 
-        if move[:captured_piece] != nil
-          @pieces[move[:captured_piece]][:captured] = true
-        end
+        #post move report
+        post_move_report = post_move(move: move, pieces: @pieces, board: @board)
+        LOG.debug "post_move_report: #{post_move_report}"
+
 
         #pawn promotion
         if move[:to_square_occupant].match(/P/) &&
@@ -54,20 +76,63 @@
 
           move[:to_square_occupant] = get_promoted(letter: "Q", color: move[:color])
           create_piece(piece_id: move[:to_square_occupant])
-
         end
 
-        return true
-      else
-        LOG.error "Invalid move:"
-        valid_move_report[:errors].each do |error|
-          LOG.error error
-        end
-        return false
-      end    
+        @board.print_board
+        @pieces.print_piece_data #for deep debugging
+
+      end
+
+      return move[:valid]
+
+
+
+      # valid_move_report = valid_move?(pgn_move: pgn_move, color: color)
+      # if valid_move_report[:valid]
+      #   move = do_move(pgn_move: pgn_move, color: color, board: @board, pieces: @pieces)
+        
+      #   LOG.debug "===========AFTER do_move==============="
+      #   move.each do |k,v|
+      #     LOG.debug "#{k}: #{v}"
+      #   end
+      #   LOG.debug "======================================="
+    
+
+      #   #increase the move_count for to_square_occupant
+      #   @pieces.data[move[:to_square_occupant]][:move_count] += 1
+       
+      #   #set the color and @next_move
+      #   @next_move = move[:color] == 'w' ? 'b' : 'w'
+
+      #   if move[:captured_piece] != nil
+      #     @pieces[move[:captured_piece]][:captured] = true
+      #   end
+
+      #   #pawn promotion
+      #   if move[:to_square_occupant].match(/P/) &&
+      #       move[:to_square].match(/8/) || move[:to_square].match(/1/)
+
+      #     #have to remove pawn from pieces
+      #     @board[:pieces].delete(move[:to_square_occupant]) #pawn vanishes!
+
+      #     move[:to_square_occupant] = get_promoted(letter: "Q", color: move[:color])
+      #     create_piece(piece_id: move[:to_square_occupant])
+
+      #   end
+
+      #   return true
+      # else
+      #   LOG.error "Invalid move:"
+      #   valid_move_report[:errors].each do |error|
+      #     LOG.error error
+      #   end
+      #   return false
+      # end    
+
+      
     end
 
-    def valid_move?(pgn_move:, color:)
+    def DELETEvalid_move?(pgn_move:, color:)
       
       #all of the following have to pass (virtually)
       #pre_move
@@ -76,8 +141,9 @@
 
       LOG.debug "=== Game.valid_move?(pgn_move: #{pgn_move}, color: #{color}"
 
-      cloned_board = @board.dup
-      cloned_pieces = @pieces.dup
+      LOG.warn "THIS DUPLICATION IS A PROBLEM"
+      cloned_board = @board.clone.map(&:clone) #@board.dup
+      cloned_pieces = @pieces.clone.map(&:clone) #@pieces.dup
 
       LOG.debug "- BEFORE -"
       LOG.debug "@board.squares[:e2] = #{@board.squares[:e2]}"
@@ -108,6 +174,7 @@
       LOG.debug "@board.squares[:e4] = #{@board.squares[:e4]}"
       LOG.debug "cloned_board.squares[:e2] = #{cloned_board.squares[:e2]}"
       LOG.debug "cloned_board.squares[:e4] = #{cloned_board.squares[:e4]}"
+      LOG.debug "post_move_report: #{post_move_report}"
 
 
       return post_move_report
@@ -128,6 +195,8 @@
         LOG.debug "#{k}: #{v}"
       end
       LOG.debug "============================="
+
+      return move
 
     end
 
@@ -151,6 +220,7 @@
       #returns post move report hash - this will be the final report of whether
       #move is valid, and what happened, (check, en passant, check mate)
       pmr = PostMove.new(move: move, pieces: pieces, board: board)
+      pmr.en_passant
       pmr.report
     end
 

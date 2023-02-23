@@ -6,7 +6,7 @@ class Board
 
   def initialize
 
-    #LOG.debug "=== Board.new"
+    LOG.debug "=== Board.new"
 
     @squares = {
       a1: :wR1, b1: :wN1, c1: :wB1, d1: :wQ1, e1: :wK,  f1: :wB2, g1: :wN2, h1: :wR2,
@@ -44,7 +44,7 @@ class Board
 
   def update_board(move:, board:, pieces:)
 
-    LOG.debug "=== Board.update_board(move: below, board: below, pieces: below)"
+    LOG.debug "=== Board.update_board(move: #{move}, board: #{board}, pieces: #{pieces})"
 
     required_keys = [ 
       :captured_piece,
@@ -108,7 +108,7 @@ class Board
       end
 
     end
-
+    
   end
 
   def square_to_strings(key:, val:)
@@ -151,30 +151,24 @@ class Board
       s[key] = val
     end
 
-    LOG.debug "\n"
-    LOG.debug "      +---+---+---+---+---+---+---+---+"
-    LOG.debug "    8 | #{s[:a8]} | #{s[:b8]} | #{s[:c8]} | #{s[:d8]} | #{s[:e8]} | #{s[:f8]} | #{s[:g8]} | #{s[:h8]} |"
-    LOG.debug "      +---+---+---+---+---+---+---+---+"
-    LOG.debug "    7 | #{s[:a7]} | #{s[:b7]} | #{s[:c7]} | #{s[:d7]} | #{s[:e7]} | #{s[:f7]} | #{s[:g7]} | #{s[:h7]} |"
-    LOG.debug "      +---+---+---+---+---+---+---+---+"
-    LOG.debug "    6 | #{s[:a6]} | #{s[:b6]} | #{s[:c6]} | #{s[:d6]} | #{s[:e6]} | #{s[:f6]} | #{s[:g6]} | #{s[:h6]} |"
-    LOG.debug "      +---+---+---+---+---+---+---+---+"
-    LOG.debug "    5 | #{s[:a5]} | #{s[:b5]} | #{s[:c5]} | #{s[:d5]} | #{s[:e5]} | #{s[:f5]} | #{s[:g5]} | #{s[:h5]} |"
-    LOG.debug "      +---+---+---+---+---+---+---+---+"
-    LOG.debug "    4 | #{s[:a4]} | #{s[:b4]} | #{s[:c4]} | #{s[:d4]} | #{s[:e4]} | #{s[:f4]} | #{s[:g4]} | #{s[:h4]} |"
-    LOG.debug "      +---+---+---+---+---+---+---+---+"
-    LOG.debug "    3 | #{s[:a3]} | #{s[:b3]} | #{s[:c3]} | #{s[:d3]} | #{s[:e3]} | #{s[:f3]} | #{s[:g3]} | #{s[:h3]} |"
-    LOG.debug "      +---+---+---+---+---+---+---+---+"
-    LOG.debug "    2 | #{s[:a2]} | #{s[:b2]} | #{s[:c2]} | #{s[:d2]} | #{s[:e2]} | #{s[:f2]} | #{s[:g2]} | #{s[:h2]} |"
-    LOG.debug "      +---+---+---+---+---+---+---+---+"
-    LOG.debug "    1 | #{s[:a1]} | #{s[:b1]} | #{s[:c1]} | #{s[:d1]} | #{s[:e1]} | #{s[:f1]} | #{s[:g1]} | #{s[:h1]} |"
-    LOG.debug "      +---+---+---+---+---+---+---+---+"
-    LOG.debug "        a   b   c   d   e   f   g   h "
-    LOG.debug "\n"
-    
-    if VERBOSE || PRINT_PIECES_EVERY_MOVE
-      print_piece_data
-    end
+    LOG.info "      +---+---+---+---+---+---+---+---+"
+    LOG.info "    8 | #{s[:a8]} | #{s[:b8]} | #{s[:c8]} | #{s[:d8]} | #{s[:e8]} | #{s[:f8]} | #{s[:g8]} | #{s[:h8]} |"
+    LOG.info "      +---+---+---+---+---+---+---+---+"
+    LOG.info "    7 | #{s[:a7]} | #{s[:b7]} | #{s[:c7]} | #{s[:d7]} | #{s[:e7]} | #{s[:f7]} | #{s[:g7]} | #{s[:h7]} |"
+    LOG.info "      +---+---+---+---+---+---+---+---+"
+    LOG.info "    6 | #{s[:a6]} | #{s[:b6]} | #{s[:c6]} | #{s[:d6]} | #{s[:e6]} | #{s[:f6]} | #{s[:g6]} | #{s[:h6]} |"
+    LOG.info "      +---+---+---+---+---+---+---+---+"
+    LOG.info "    5 | #{s[:a5]} | #{s[:b5]} | #{s[:c5]} | #{s[:d5]} | #{s[:e5]} | #{s[:f5]} | #{s[:g5]} | #{s[:h5]} |"
+    LOG.info "      +---+---+---+---+---+---+---+---+"
+    LOG.info "    4 | #{s[:a4]} | #{s[:b4]} | #{s[:c4]} | #{s[:d4]} | #{s[:e4]} | #{s[:f4]} | #{s[:g4]} | #{s[:h4]} |"
+    LOG.info "      +---+---+---+---+---+---+---+---+"
+    LOG.info "    3 | #{s[:a3]} | #{s[:b3]} | #{s[:c3]} | #{s[:d3]} | #{s[:e3]} | #{s[:f3]} | #{s[:g3]} | #{s[:h3]} |"
+    LOG.info "      +---+---+---+---+---+---+---+---+"
+    LOG.info "    2 | #{s[:a2]} | #{s[:b2]} | #{s[:c2]} | #{s[:d2]} | #{s[:e2]} | #{s[:f2]} | #{s[:g2]} | #{s[:h2]} |"
+    LOG.info "      +---+---+---+---+---+---+---+---+"
+    LOG.info "    1 | #{s[:a1]} | #{s[:b1]} | #{s[:c1]} | #{s[:d1]} | #{s[:e1]} | #{s[:f1]} | #{s[:g1]} | #{s[:h1]} |"
+    LOG.info "      +---+---+---+---+---+---+---+---+"
+    LOG.info "        a   b   c   d   e   f   g   h "
 
     return true
   end

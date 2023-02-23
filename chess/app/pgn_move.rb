@@ -1,4 +1,4 @@
-class PGNMove
+class PgnMove
 
   def self.interpret(color:, pgn_move:, board:, pieces:)
     
@@ -25,6 +25,8 @@ class PGNMove
     else
       raise "PGN Move not recognized."
     end
+
+    LOG.debug "PgnMove.interpret(color: #{color}, pgn_move: #{pgn_move}, board: #{board}, pieces: #{pieces}) move: #{move}"
 
     return move
 

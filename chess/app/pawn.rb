@@ -119,9 +119,6 @@
         color: color
       }
 
-      LOG.debug "move:"
-      LOG.debug move
-
       take = false
       if pgn_move.match(/x/)
         take = true
@@ -139,15 +136,15 @@
       end
       
       if pawns.length == 0
-        move[:error] = "invalid pawn move"
+        move[:error] = "Invalid pawn move."
       end
   
       if pawns.length > 1
         pawns.each do |square, occupant|
           target_square = take ? "#{a_pgn[2]}#{a_pgn[3]}".to_sym : pgn_move.to_sym
-          if board[:pieces][occupant][:moves].bsearch{|m| m == target_square} ||
-             board[:pieces][occupant][:attacks].bsearch{|m| m == target_square} ||
-             board[:pieces][occupant][:ep_attacks].bsearch{|m| m == target_square}
+          if pieces.data[occupant][:moves].bsearch{|m| m == target_square} ||
+             pieces.data[occupant][:attacks].bsearch{|m| m == target_square} ||
+             pieces.data[occupant][:ep_attacks].bsearch{|m| m == target_square}
             pawn[:square] = square
             pawn[:id] = occupant
           end
@@ -171,13 +168,18 @@
           attacked_square = "#{a_pgn[2]}#{a_pgn[3]}".to_sym
 
           #En passant?
-          board[:pieces].each do |piece, data|
+          #board[:pieces].each do |piece, data|
+          pieces.data.each do |piece, data|
             next unless piece.match(/P/) #only looking at pawns here
             if data[:ep_attacks].bsearch{|square| square == attacked_square }
-              board[:pieces].each do |attacked_piece, attacked_piece_data|
+              #board[:pieces].each do |attacked_piece, attacked_piece_data|
+              pieces.data.each do |attacked_piece, attacked_piece_data|
                 next unless attacked_piece.match(/P/) #only looking at pawns still
-                attacking_piece_square = self.get_square_of_piece(board: board, piece: piece)
+                attacking_piece_square = pieces.get_square_of_piece(board: board, piece: piece)
                 if attacked_piece_data[:ep_threats].bsearch{|square| square == attacking_piece_square}
+
+                  LOG.info "En passant!"
+
                   en_passant = true
 
                   move[:valid] = true
@@ -193,9 +195,9 @@
 
           unless en_passant #regular pawn take move
             
-            if board[:pieces][pawn[:id]][:attacks].bsearch{|square| square == attacked_square}
+            if pieces.data[pawn[:id]][:attacks].bsearch{|square| square == attacked_square}
               move[:valid] = true
-              move[:captured_piece] = board[:squares][attacked_square]
+              move[:captured_piece] = board.squares[attacked_square]
               move[:from_square] = pawn[:square]
               move[:from_square_occupant] = :vac
               move[:to_square] = attacked_square
@@ -210,10 +212,8 @@
         else #regular pawn forward move
 
   
-          LOG.debug "======================="
-          LOG.debug "Pawn.rb - regular forward move:"
-          LOG.debug pawn
-          LOG.debug "======================="
+          LOG.debug "regular forward pawn move: #{pawn}"
+          
 
           
           if pieces.data[pawn[:id]][:moves].bsearch{|square| square == pgn_move.to_sym}
@@ -224,7 +224,7 @@
             move[:to_square_occupant] = pawn[:id]
           else
             move[:valid] = false
-            move[:error] = "Invalid pawn move. Pawn.rb regular pawn forward move."
+            move[:error] = "invalid pawn move. pawn.rb regular pawn forward move."
           end
 
         end
@@ -232,14 +232,15 @@
       end
 
 
-      LOG.debug "move:"
-      LOG.debug move
+      LOG.debug "complete pawn move data structure: #{move}"
 
       return move
 
     end
 
     def self.get_possible_moves(board:, pieces:, pawn_id:)
+
+      #LOG.debug "=== Pawn.get_possible_moves(board: #{board}, pieces: #{pieces}, pawn_id: #{pawn_id})"
 
       color = pawn_id.match(/^w/) ? 'w' : 'b'
 
@@ -332,7 +333,7 @@
 
 
     #en passant possible? get attack squares. this has to be run AFTER the board is updated with the last move.
-    def self.get_en_passant_moves(board:, pgn_move:, color:)
+    def self.get_en_passant_moves(board:, pieces:, pgn_move:, color:)
 
       en_passant_moves = [] #should be array of hashes like: {piece_id, threats, attacks}
       a_pgn_move = pgn_move.to_s.chars
@@ -346,7 +347,7 @@
         if a_square[1] == "5" && a_piece[0] == "w" && color == "b"
 
           #check if moves_count is 1
-          pawn_that_moved = get_piece_data_from_square(board: board, target_square: pgn_move.to_sym)
+          pawn_that_moved = pieces.get_piece_data_from_square(board: board, target_square: pgn_move.to_sym)
           if pawn_that_moved[:data][:move_count] == 1
                         
             #possible for this pawn if black pawn on rank 5 next to this pawn with one move, who just moved! lol

@@ -124,7 +124,7 @@
 
        next if piece_data[:attacks].count == 0
        piece_data[:attacks].each do |attack|
-         @data[board.squares[attack]][:threats].push get_square_of_piece(piece)
+         @data[board.squares[attack]][:threats].push get_square_of_piece(board: board, piece: piece)
        end
 
      end
