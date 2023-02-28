@@ -385,6 +385,22 @@
 
     end
 
+    def self.update_en_passant(move:, pieces:, board:)
+
+      #En passant?? Update @board if so..
+      a_en_passants = Pawn::get_en_passant_moves(board: board, pieces: pieces, pgn_move: move[:pgn_move], color: move[:color])
+
+      a_en_passants.each do |en_passant|
+        if en_passant[:attacks].count > 0
+          pieces.data[en_passant[:piece_id]][:ep_attacks].concat en_passant[:attacks]
+        end
+        if en_passant[:threats].count > 0
+          pieces.data[en_passant[:piece_id]][:ep_threats].concat en_passant[:threats]
+        end
+      end
+
+    end 
+
   end
   
 #end

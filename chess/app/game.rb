@@ -63,8 +63,8 @@
         @next_move = move[:color] == 'w' ? 'b' : 'w'
 
         #post move report
-        post_move_report = post_move(move: move, pieces: @pieces, board: @board)
-        LOG.debug "post_move_report: #{post_move_report}"
+        status_report = post_move(move: move, pieces: @pieces, board: @board)
+        LOG.debug "status_report: #{status_report}"
 
 
         #pawn promotion
@@ -216,12 +216,8 @@
     end
 
     def post_move(move:, pieces:, board:)
-      #give is the real board and pieces, or a trial board and pieces
-      #returns post move report hash - this will be the final report of whether
-      #move is valid, and what happened, (check, en passant, check mate)
-      pmr = PostMove.new(move: move, pieces: pieces, board: board)
-      pmr.en_passant
-      pmr.report
+      Pawn.update_en_passant(move: move, pieces: pieces, board: board)
+      StatusReport.report(move: move, pieces: pieces, board: board)
     end
 
     def king_move(pgn_move:, color:)
