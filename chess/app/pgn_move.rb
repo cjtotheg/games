@@ -21,7 +21,7 @@ class PgnMove
     when /^N/
       raise "Knight moves not implemented yet"
     when /^K/
-      raise "King moves not implemented yet"
+      move.merge!(King::interpret_pgn_move(board: board, pieces: pieces, pgn_move: pgn_move, color: color))
     else
       raise "PGN Move not recognized."
     end

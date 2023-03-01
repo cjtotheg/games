@@ -1,5 +1,5 @@
   
-module Chess
+#module Chess
   
   class King
     
@@ -69,13 +69,15 @@ module Chess
       h7: [:h8, :h6, :g6, :g7, :g8],
       h8: [:h7, :g7, :g8]}
   
-    def self.interpret_pgn_move(board:, pgn_move:, color:)
+    def self.interpret_pgn_move(board:, pieces:, pgn_move:, color:)
   
+        LOG.debug "============= King.interpret_pgn_move #{color} #{pgn_move} =============="
+
         move = {
           valid: false,
           error: "",
           captured_piece: nil,
-          from_square: self.get_square_of_piece(board: board, piece: "#{color}K".to_sym),
+          from_square: pieces.get_square_of_piece(board: board, piece: "#{color}K".to_sym),
           from_square_occupant: :vac,
           to_square: nil,
           to_square_occupant: nil,
@@ -101,11 +103,7 @@ module Chess
         if a_pgn.length > 4
           move[:error] += "Invalid king move. PGN length is more than 4."
         end
-  
-        LOG.debug "============= KING ==============" if VERBOSE
-        LOG.debug "pgn: #{pgn_move}" if VERBOSE
-        LOG.debug "color: #{color}" if VERBOSE
-        p move if VERBOSE
+
         KING_MOVES.each do |on_square, moves|
           if on_square == move[:from_square] 
             moves.each do |to_square|
@@ -113,7 +111,7 @@ module Chess
                 
                 #REJECT CASE: is the square occupied by friendly forces?
                 occupied_friendly = false
-                if board[:squares][to_square].to_s.chars[0] == color
+                if board.squares[to_square].to_s.chars[0] == color
                   move[:error] += "Invalid king move. square occupied by friendly forces."
                   occupied_friendly = true
                 end
@@ -127,7 +125,7 @@ module Chess
                 #pawn
                 pawn_moves = color == 'w' ? Pawn::BLACK_PAWN_MOVES : Pawn::WHITE_PAWN_MOVES
                 pawn_moves.each do |square, this_pawns_moves|
-                  occupant = board[:squares][square].to_s.chars
+                  occupant = board.squares[square].to_s.chars
                   next if occupant[0] == color || occupant[1] != 'P' 
                   this_pawns_moves.each do |this_pawn_move|
                     if this_pawn_move == move[:to_square]
@@ -177,4 +175,4 @@ module Chess
   
   end
   
-end
+#end

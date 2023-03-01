@@ -31,6 +31,16 @@ class StatusReport
 
     data[:valid] = true
 
+    data.each do |k,v|
+      LOG.debug "#{k}: #{v}" unless k == :move
+      if k == :move
+        LOG.debug "move:"
+        v.each do |k2,v2|
+          LOG.debug "  #{k2}: #{v2}"
+        end
+      end
+    end
+
     return data
 
   end

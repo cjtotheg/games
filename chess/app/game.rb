@@ -28,13 +28,12 @@
     end
 
     def mover(pgn_move:, color:)
-      #this is the main method for making a move
-      #it attempts to make the move and returns true or false
-      #if the move is valid, it updates the board and pieces
-      #if the move is invalid, it returns false and sets @user_error_messages
-      LOG.debug "=== Game.mover(pgn_move: #{pgn_move}, color: #{color})"
+
+      LOG.debug "=== Game.mover(pgn_move: #{pgn_move}, color: #{color})"     
 
       move = PgnMove.interpret(color: color, pgn_move: pgn_move, board: @board, pieces: @pieces)
+      status = StatusReport.report(move: move, pieces: pieces, board: board)
+
       #@board.print_board
       #@pieces.print_piece_data #for deep debugging
 
@@ -46,6 +45,10 @@
       
       else
 
+        #save the current board state & pieces state for rollback later
+        @board.save_state
+        @pieces.save_state
+
         #if take, set piece as captured
         if move[:captured_piece] != nil
           LOG.debug "captured piece: #{move[:captured_piece]}"
@@ -56,23 +59,39 @@
         @board.update_board(move: move, board: @board, pieces: @pieces)
         @pieces.update(@board)
 
+        #check to see if the move is still valid (like check was not cleared)
+        status = StatusReport.report(move: move, pieces: pieces, board: board)
+        if move[:color] == 'b' && status[:b_check] == true || move[:color] == 'w' && status[:w_check] == true
+          move[:valid] = false
+          move[:error] = "King is in check. This move does not clear the check."
+          @user_error_messages.push move[:error]
+          LOG.error "move[:error]: #{move[:error]}"
+
+          #rollback the move
+          @board.restore_state
+          @pieces.restore_state
+
+          return false
+        end
+
         #increase the move_count for to_square_occupant
         @pieces.data[move[:to_square_occupant]][:move_count] += 1
        
         #set the color and @next_move
         @next_move = move[:color] == 'w' ? 'b' : 'w'
 
-        #post move report
-        status_report = post_move(move: move, pieces: @pieces, board: @board)
-        LOG.debug "status_report: #{status_report}"
+        ####################################################
+        ### post move actions
+        ####################################################
 
+        Pawn.update_en_passant(move: move, pieces: @pieces, board: @board)
 
         #pawn promotion
         if move[:to_square_occupant].match(/P/) &&
             move[:to_square].match(/8/) || move[:to_square].match(/1/)
 
           #have to remove pawn from pieces
-          @board[:pieces].delete(move[:to_square_occupant]) #pawn vanishes!
+          @pieces.data.delete(move[:to_square_occupant]) #pawn vanishes!
 
           move[:to_square_occupant] = get_promoted(letter: "Q", color: move[:color])
           create_piece(piece_id: move[:to_square_occupant])
@@ -181,7 +200,7 @@
 
     end
 
-    def do_move(pgn_move:, color:, board:, pieces:)
+    def DELETEdo_move(pgn_move:, color:, board:, pieces:)
 
       LOG.debug "============ do_move ========"
       LOG.debug "@board.squares[:e2] = #{@board.squares[:e2]}"
@@ -200,14 +219,14 @@
 
     end
 
-    def pre_move(pgn_move:, color:, board:, pieces:)
+    def DELETEpre_move(pgn_move:, color:, board:, pieces:)
       LOG.debug "=== Game.pre_move(pgn_move: #{pgn_move}, color: #{color}, board: below, pieces: below)"
 
       pm = PreMove.new(color: color, pgn_move: pgn_move, board: board, pieces: pieces)
       pm.report
     end
 
-    def make_move(move:, pieces:, board:)
+    def DELETEmake_move(move:, pieces:, board:)
       #give it the real board and pieces, or a trial board and pieces
       #updates board and pieces objects based on move hash
       LOG.debug "=== Game.make_move(move: below, pieces: below, board: below)"
@@ -215,7 +234,7 @@
       board.update_board(move: move, board: board, pieces: pieces)
     end
 
-    def post_move(move:, pieces:, board:)
+    def DELETEpost_move(move:, pieces:, board:)
       Pawn.update_en_passant(move: move, pieces: pieces, board: board)
       StatusReport.report(move: move, pieces: pieces, board: board)
     end

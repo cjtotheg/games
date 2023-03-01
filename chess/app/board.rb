@@ -19,8 +19,18 @@ class Board
       a8: :bR1, b8: :bN1, c8: :bB1, d8: :bQ1, e8: :bK,  f8: :bB2, g8: :bN2, h8: :bR2
     }
 
+    @squares_copy = @squares.dup
+
   end
   
+  def save_state
+    @squares_copy = @squares.dup
+  end
+
+  def restore_state
+    @squares = @squares_copy.dup
+  end
+
   def get_square_of_piece(piece)
     @squares.each do |square, occupant| 
       return square if occupant == piece

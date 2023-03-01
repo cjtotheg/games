@@ -268,39 +268,39 @@ module Chess
         expect(game.black_move("a5")).to eq(false)
       end
 
-      # it 'It is still black move.' do
-      #   expect(game.next_move).to eq('b')
-      # end
+      it 'It is still black move.' do
+        expect(game.next_move).to eq('b')
+      end
 
-      # it 'Black moves king out of check with Ke7.' do 
-      #   expect(game.black_move("Ke7")).to eq(true)
-      # end
+      it 'Black moves king out of check with Ke7.' do 
+        expect(game.black_move("Ke7")).to eq(true)
+      end
 
     end
 
-#     context 'White moves "fxg8" both taking the knight on g8 and getting promoted' do
+    context 'White moves "fxg8" both taking the knight on g8 and getting promoted' do
 
-#       it 'move is successful' do
-#         expect(game.white_move("fxg8")).to eq(true)
-#       end
+      it 'move is successful' do
+        expect(game.white_move("fxg8")).to eq(true)
+      end
 
-#       it 'knight :bN2 on :g8 is captured' do
-#         expect(game.pieces.data[:bN2][:captured]).to eq(true)
-#       end
+      # it 'knight :bN2 on :g8 is captured' do
+      #   expect(game.pieces.data[:bN2][:captured]).to eq(true)
+      # end
 
-#       it 'pawn is promoted, board has :wQ2 on :g8' do
-#         expect(game.board.squares[:g8]).to eq(:wQ2)
-#       end
+      # it 'pawn is promoted, board has :wQ2 on :g8' do
+      #   expect(game.board.squares[:g8]).to eq(:wQ2)
+      # end
 
-#       it 'pawn is deleted from board[:pieces]' do
-#         expect(game.pieces.data[:wP5]).to eq(nil)
-#       end
+      # it 'pawn is deleted from board[:pieces]' do
+      #   expect(game.pieces.data[:wP5]).to eq(nil)
+      # end
 
-#       it 'pawn is deleted from board[:squares]' do
-#         expect(game.board.squares.value?(:wP5)).to eq(false)
-#       end
+      # it 'pawn is deleted from board[:squares]' do
+      #   expect(game.board.squares.value?(:wP5)).to eq(false)
+      # end
 
-#     end
+    end
 
 #     context 'Black moves "d2", there are two pawns on that file now, king :e1 is in check, and bishop :c1 is attacked' do
 

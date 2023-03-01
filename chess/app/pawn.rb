@@ -105,7 +105,7 @@
 
     def self.interpret_pgn_move(board:, pieces:, pgn_move:, color:)
 
-      LOG.debug "=== Pawn.interpret_pgn_move"
+      LOG.debug "============= Pawn.interpret_pgn_move #{color} #{pgn_move} =============="
 
       move = {
         valid: false,

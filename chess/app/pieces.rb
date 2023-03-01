@@ -43,6 +43,16 @@
         bR2: {captured: false, move_count: 0, moves: [], attacks: [], threats: []}
       }
 
+      @data_copy = Marshal.load(Marshal.dump(@data))
+
+    end
+
+    def save_state
+      @data_copy = Marshal.load(Marshal.dump(@data))
+    end
+
+    def restore_state
+      @data = Marshal.load(Marshal.dump(@data_copy))
     end
 
     def get_piece_data_from_square(board:, target_square:)
